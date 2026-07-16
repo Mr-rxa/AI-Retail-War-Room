@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import URL
 
-from config import Config
+from .config import Config
 
 
 DATABASE_URL = URL.create(
