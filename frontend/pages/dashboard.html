@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - AI Retail War Room</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link rel="stylesheet" href="../css/main.css">
+<link rel="stylesheet" href="../css/components.css">
+<link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body data-page="dashboard">
+
+<div class="app-shell">
+  <div id="sidebarMount"></div>
+
+  <div class="main-col">
+    <div id="navbarMount"></div>
+
+    <main class="content">
+      <div id="errorBanner" class="error-banner"></div>
+
+      <div class="slicer-panel">
+        <div class="slicer-head">
+          <div>
+            <h2>Dashboard Slicers</h2>
+            <div class="slicer-meta" id="filterSummary">All retail data</div>
+          </div>
+          <div class="slicer-actions">
+            <button class="btn-outline" id="resetFiltersBtn"><i class="bi bi-x-circle"></i>Reset</button>
+            <button class="btn-primary" id="applyFiltersBtn"><i class="bi bi-funnel"></i>Apply</button>
+          </div>
+        </div>
+        <div class="slicer-grid">
+          <label class="slicer-field">
+            <span>Year</span>
+            <select id="yearFilter"><option value="">All years</option></select>
+          </label>
+          <label class="slicer-field">
+            <span>State</span>
+            <select id="stateFilter"><option value="">All states</option></select>
+          </label>
+          <label class="slicer-field">
+            <span>Payment</span>
+            <select id="paymentFilter"><option value="">All payments</option></select>
+          </label>
+        </div>
+      </div>
+
+      <section class="command-stage">
+        <div class="command-hero">
+          <div class="command-kicker">Executive Control Surface</div>
+          <div class="command-title-row">
+            <div>
+              <h2>Retail performance at a glance</h2>
+              <p id="heroNarrative">Loading the current business picture across revenue, customers, fulfilment, forecast and anomaly pressure.</p>
+            </div>
+            <div class="hero-scope">
+              <div class="hero-scope-label">Analysis Scope</div>
+              <strong id="heroScope">All retail data</strong>
+              <span id="heroRange">Waiting for monthly coverage</span>
+            </div>
+          </div>
+          <div class="hero-metrics">
+            <div class="hero-metric">
+              <span class="hero-label">Health Grade</span>
+              <strong id="heroHealthValue">-</strong>
+              <span id="heroHealthNote">Waiting for business health</span>
+            </div>
+            <div class="hero-metric">
+              <span class="hero-label">Forecast Outlook</span>
+              <strong id="heroForecastValue">-</strong>
+              <span id="heroForecastNote">Waiting for forecast direction</span>
+            </div>
+            <div class="hero-metric">
+              <span class="hero-label">Open Risk Pressure</span>
+              <strong id="heroRiskValue">-</strong>
+              <span id="heroRiskNote">Waiting for anomaly scan</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="dashboard-grid">
+        <section class="dashboard-main">
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-top"><span class="kpi-label">Total Revenue</span><div class="kpi-icon blue"><i class="bi bi-cash-coin"></i></div></div>
+              <div class="kpi-value" id="kpiRevenue">R$ 0</div>
+              <span class="kpi-delta up"><i class="bi bi-graph-up-arrow"></i><span id="kpiRevenueScope">All-time</span></span>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-top"><span class="kpi-label">Total Orders</span><div class="kpi-icon violet"><i class="bi bi-bag-check-fill"></i></div></div>
+              <div class="kpi-value" id="kpiOrders">0</div>
+              <span class="kpi-delta up"><i class="bi bi-people-fill"></i><span class="sub" id="kpiCustomers">0 customers</span></span>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-top"><span class="kpi-label">Avg. Order Value</span><div class="kpi-icon green"><i class="bi bi-receipt"></i></div></div>
+              <div class="kpi-value" id="kpiAov">R$ 0</div>
+              <span class="kpi-delta up"><i class="bi bi-check-circle-fill"></i>Per order</span>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-top"><span class="kpi-label">Customer Base</span><div class="kpi-icon amber"><i class="bi bi-people"></i></div></div>
+              <div class="kpi-value" id="kpiCustomersValue">0</div>
+              <span class="kpi-delta up"><i class="bi bi-person-check"></i>Unique customers</span>
+            </div>
+          </div>
+
+          <div class="section-title"><h2>Revenue Command</h2><span class="hint">Trend, scale and payment behaviour for the active dashboard slice</span></div>
+          <div class="revenue-layout">
+            <div class="panel">
+              <div class="panel-head"><div><h3>Monthly Revenue</h3><div class="desc">Directional sales view across the selected business slice</div></div></div>
+              <div class="panel-body"><div style="height:320px;"><canvas id="revenueChart"></canvas></div></div>
+            </div>
+            <div class="panel payment-panel">
+              <div class="panel-head"><h3>Payment Mix</h3></div>
+              <div class="panel-body">
+                <div style="height:210px;"><canvas id="paymentChart"></canvas></div>
+                <div id="paymentLegend" class="legend-list"></div>
+                <div class="legend-sub" id="paymentTotalOrders" style="margin-top:10px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-title"><h2>Executive Readout</h2><span class="hint">Narrative signals to anchor the dashboard story</span></div>
+          <div class="readout-grid">
+            <article class="readout-card">
+              <div class="readout-label">Current vs Previous Month</div>
+              <div class="readout-value" id="readoutMomentumValue">-</div>
+              <div class="readout-note" id="readoutMomentumNote">Waiting for monthly comparison</div>
+            </article>
+            <article class="readout-card">
+              <div class="readout-label">Current vs Previous Quarter</div>
+              <div class="readout-value" id="readoutConcentrationValue">-</div>
+              <div class="readout-note" id="readoutConcentrationNote">Waiting for quarterly comparison</div>
+            </article>
+            <article class="readout-card">
+              <div class="readout-label">Top Drivers Of Change</div>
+              <div class="readout-value" id="readoutOutlookValue">-</div>
+              <div class="readout-note" id="readoutOutlookNote">Waiting for the business driver readout</div>
+            </article>
+          </div>
+
+          <div class="section-title" id="top-categories"><h2>Category Leaders</h2><span class="hint">Commercial contribution ranked by revenue</span></div>
+          <div class="panel">
+            <div class="panel-head"><h3>Top Categories</h3></div>
+            <div class="panel-body tight">
+              <table class="data-table">
+                <thead><tr><th>Category</th><th class="num">Revenue</th><th class="num">Orders</th></tr></thead>
+                <tbody id="topCategoriesBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <aside class="dashboard-rail">
+          <div class="panel snapshot-panel">
+            <div class="panel-head"><h3>Decision Snapshot</h3><div class="desc">What deserves attention right now</div></div>
+            <div class="panel-body">
+              <div class="snapshot-grid">
+                <div class="snapshot-card">
+                  <div class="snapshot-top">
+                    <span class="snapshot-label">Forecast Outlook</span>
+                    <span class="snapshot-badge neutral" id="snapshotForecastBadge">Monitoring</span>
+                  </div>
+                  <div class="snapshot-value" id="snapshotForecastValue">-</div>
+                  <div class="snapshot-note" id="snapshotForecastNote">Waiting for forecast summary</div>
+                </div>
+                <div class="snapshot-card">
+                  <div class="snapshot-top">
+                    <span class="snapshot-label">Retention Signal</span>
+                    <span class="snapshot-badge neutral" id="snapshotRetentionBadge">Monitoring</span>
+                  </div>
+                  <div class="snapshot-value" id="snapshotRetentionValue">-</div>
+                  <div class="snapshot-note" id="snapshotRetentionNote">Waiting for customer retention metrics</div>
+                </div>
+                <div class="snapshot-card">
+                  <div class="snapshot-top">
+                    <span class="snapshot-label">Delivery Pace</span>
+                    <span class="snapshot-badge neutral" id="snapshotDeliveryBadge">Monitoring</span>
+                  </div>
+                  <div class="snapshot-value" id="snapshotDeliveryValue">-</div>
+                  <div class="snapshot-note" id="snapshotDeliveryNote">Waiting for fulfilment metrics</div>
+                </div>
+                <div class="snapshot-card">
+                  <div class="snapshot-top">
+                    <span class="snapshot-label">Risk Monitor</span>
+                    <span class="snapshot-badge neutral" id="snapshotRiskBadge">Monitoring</span>
+                  </div>
+                  <div class="snapshot-value" id="snapshotRiskValue">-</div>
+                  <div class="snapshot-note" id="snapshotRiskNote">Waiting for anomaly detection results</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Business Health</h3><div class="desc">Composite score across six weighted metrics</div></div>
+            <div class="panel-body">
+              <div class="health-wrap">
+                <div class="health-ring">
+                  <svg viewBox="0 0 120 120" id="healthRingSvg">
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#1B2A40" stroke-width="10"/>
+                    <circle class="ring-progress" cx="60" cy="60" r="50" fill="none" stroke-width="10" stroke-linecap="round"/>
+                  </svg>
+                  <div class="ring-label"><span class="score" id="healthScore">0</span><span class="grade" id="healthGrade">-</span></div>
+                </div>
+                <div class="health-breakdown" id="healthBreakdown"></div>
+              </div>
+              <div class="health-stat-strip">
+                <div><div class="health-stat-label">Avg. Delivery</div><strong id="healthDeliveryDays">-</strong></div>
+                <div><div class="health-stat-label">Repeat Rate</div><strong id="healthRepeatRate">-</strong></div>
+                <div><div class="health-stat-label">Avg. Order Value</div><strong id="healthAov">-</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" id="top-states">
+            <div class="panel-head"><h3>Regional Winners</h3><div class="desc">Highest-contributing states by revenue</div></div>
+            <div class="panel-body tight">
+              <table class="data-table">
+                <thead><tr><th>State</th><th class="num">Revenue</th><th class="num">Orders</th></tr></thead>
+                <tbody id="topStatesBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Watchlist</h3><div class="desc">Categories, regions and risks that need attention</div></div>
+            <div class="panel-body">
+              <div class="watchlist" id="watchlistItems"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Decision Log</h3><div class="desc">Operational actions for the next review cycle</div></div>
+            <div class="panel-body">
+              <div class="decision-log" id="decisionLogItems"></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div id="footerMount"></div>
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/charts.js"></script>
+<script src="../js/dashboard.js"></script>
+</body>
+</html>

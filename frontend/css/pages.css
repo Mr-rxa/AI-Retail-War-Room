@@ -1,0 +1,97 @@
+/**
+ * pages.css — styles shared across forecast.html, anomaly.html, insights.html, advisor.html.
+ * Dashboard-only rules stay in dashboard.css; reusable pieces stay in components.css.
+ */
+
+/* ===== Forecast page ===== */
+.forecast-stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:0;}
+.forecast-stat{padding:14px 16px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(148,163,184,.1);}
+.forecast-stat .fs-label{font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;margin-bottom:4px;}
+.forecast-stat .fs-value{font-size:18px;font-weight:800;}
+.forecast-stat .fs-value.pos{color:var(--success);}
+.forecast-stat .fs-value.neg{color:var(--danger);}
+@media (max-width:900px){.forecast-stat-row{grid-template-columns:1fr 1fr;}}
+
+/* ===== Anomaly page ===== */
+.anomaly-filter-bar{display:flex;gap:8px;margin-bottom:16px;}
+.anomaly-filter-bar button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.anomaly-card{
+  display:flex;gap:14px;padding:16px 18px;border:1px solid var(--border);border-radius:var(--radius-md);
+  background:linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,0)), var(--surface);margin-bottom:12px;box-shadow:var(--shadow-sm);
+}
+.anomaly-card .ac-icon{width:38px;height:38px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.anomaly-card.critical .ac-icon{background:var(--danger-bg);color:var(--danger);}
+.anomaly-card.high .ac-icon{background:var(--danger-bg);color:var(--danger);}
+.anomaly-card.opportunity .ac-icon{background:var(--success-bg);color:var(--success);}
+.anomaly-card.info .ac-icon{background:var(--info-bg);color:var(--info);}
+.anomaly-card .ac-top{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:6px;}
+.anomaly-card .ac-title{font-size:14px;font-weight:700;}
+.anomaly-card .ac-meta{font-size:11.5px;color:var(--text-muted);}
+.anomaly-card .ac-msg{font-size:13px;color:var(--text-secondary);margin-bottom:8px;line-height:1.5;}
+.anomaly-card .ac-rec{
+  font-size:12.5px;background:rgba(255,255,255,.03);border-radius:8px;padding:9px 12px;color:var(--text-primary);
+  display:flex;gap:8px;align-items:flex-start;
+}
+.anomaly-card .ac-detail-grid{display:grid;gap:8px;}
+.anomaly-card .ac-rec strong{font-weight:700;color:var(--text-primary);}
+.anomaly-card .ac-confidence{font-size:11px;color:var(--text-muted);margin-top:6px;}
+
+/* ===== Insights page ===== */
+.brief-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
+.brief-card{
+  border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);
+  padding:16px 18px;box-shadow:var(--shadow-sm);
+}
+.brief-label{font-size:11px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;}
+.brief-value{font-size:24px;font-weight:800;color:var(--text-primary);margin-bottom:6px;}
+.brief-note{font-size:12.5px;line-height:1.55;color:var(--text-secondary);}
+.insight-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.insight-card{
+  border:1px solid var(--border);border-radius:var(--radius-md);background:var(--surface);
+  padding:16px 18px;box-shadow:var(--shadow-sm);background-image:linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,0));
+}
+.insight-card .ic-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.insight-card .ic-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.insight-card.success .ic-icon{background:var(--success-bg);color:var(--success);}
+.insight-card.info .ic-icon{background:var(--info-bg);color:var(--info);}
+.insight-card .ic-title{font-size:13.5px;font-weight:700;}
+.insight-card .ic-msg{font-size:12.5px;color:var(--text-secondary);line-height:1.5;}
+@media (max-width:1200px){.insight-grid,.brief-grid{grid-template-columns:1fr 1fr;}}
+@media (max-width:760px){.brief-grid{grid-template-columns:1fr;}}
+
+.growth-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+.growth-row:last-child{border-bottom:none;}
+.growth-row .gr-month{font-size:12.5px;font-weight:600;color:var(--text-secondary);}
+.growth-row .gr-value{font-size:13px;font-weight:700;}
+.growth-row .gr-value.up{color:var(--success);}
+.growth-row .gr-value.down{color:var(--danger);}
+
+/* ===== Customer Intelligence page ===== */
+.customer-rec-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+.customer-rec-card{
+  border:1px solid var(--border);border-radius:var(--radius-md);background:linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,0)), var(--surface);
+  padding:16px 18px;box-shadow:var(--shadow-sm);
+}
+.customer-rec-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;}
+.customer-rec-title{font-size:13.5px;font-weight:700;color:var(--text-primary);}
+.customer-rec-body{font-size:12.5px;color:var(--text-secondary);line-height:1.6;}
+@media (max-width:900px){.customer-rec-grid{grid-template-columns:1fr;}}
+
+/* ===== Advisor page ===== */
+.advisor-toolbar{display:flex;gap:8px;flex-wrap:wrap;}
+.advisor-report{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);
+  padding:28px 32px;box-shadow:var(--shadow-sm);font-size:13.5px;line-height:1.75;color:var(--text-secondary);
+}
+.advisor-report h1,.advisor-report h2,.advisor-report h3{color:var(--text-primary);font-weight:700;margin-top:1.4em;margin-bottom:.5em;}
+.advisor-report h1{font-size:19px;}
+.advisor-report h2{font-size:16px;}
+.advisor-report h3{font-size:14px;}
+.advisor-report ul,.advisor-report ol{padding-left:1.3em;}
+.advisor-report li{margin-bottom:.35em;}
+.advisor-report strong{color:var(--text-primary);}
+.advisor-report code{background:rgba(255,255,255,.04);padding:1px 6px;border-radius:4px;font-family:var(--font-mono);font-size:12px;}
+.advisor-report blockquote{border-left:3px solid var(--accent);padding-left:14px;color:var(--text-muted);margin:12px 0;}
+.advisor-report hr{border:none;border-top:1px solid rgba(148,163,184,.12);margin:20px 0;}
+.advisor-empty{text-align:center;padding:60px 20px;color:var(--text-muted);}
+.advisor-empty i{font-size:32px;color:var(--text-muted);margin-bottom:12px;display:block;}

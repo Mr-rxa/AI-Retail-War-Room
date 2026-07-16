@@ -1,0 +1,55 @@
+/**
+ * theme.css — design tokens only. No selectors, no layout rules here.
+ * Every other stylesheet reads from these variables.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500&display=swap');
+
+:root{
+  /* Sidebar / brand */
+  --sidebar-bg:#09111F;
+  --sidebar-bg-hover:#101B2E;
+  --sidebar-active:#14233A;
+  --sidebar-text:#7F91AE;
+  --sidebar-text-active:#F5F7FB;
+  --accent:#2DD4BF;
+  --accent-soft:rgba(45,212,191,.14);
+  --accent-dark:#1FB7A4;
+  --accent-2:#3B82F6;
+
+  /* Content area */
+  --bg:#06101D;
+  --bg-elev:#0A1526;
+  --surface:#0E1B2E;
+  --surface-2:#132238;
+  --surface-3:#182A44;
+  --border:rgba(148,163,184,.18);
+  --border-strong:rgba(148,163,184,.28);
+  --text-primary:#E6EEF8;
+  --text-secondary:#B3C0D4;
+  --text-muted:#7E8CA5;
+
+  /* Status */
+  --success:#34D399;
+  --success-bg:rgba(52,211,153,.16);
+  --warning:#F59E0B;
+  --warning-bg:rgba(245,158,11,.16);
+  --danger:#F87171;
+  --danger-bg:rgba(248,113,113,.16);
+  --info:#60A5FA;
+  --info-bg:rgba(96,165,250,.16);
+
+  /* Type */
+  --font-body:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+
+  /* Radius / elevation */
+  --radius-sm:8px;
+  --radius-md:12px;
+  --radius-lg:16px;
+  --shadow-sm:0 10px 24px rgba(1,8,20,.24);
+  --shadow-md:0 16px 36px rgba(1,8,20,.28);
+  --shadow-lg:0 24px 48px rgba(1,8,20,.34);
+
+  --sidebar-w:248px;
+  --topbar-h:60px;
+}

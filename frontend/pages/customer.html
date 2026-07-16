@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer Intelligence - AI Retail War Room</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link rel="stylesheet" href="../css/main.css">
+<link rel="stylesheet" href="../css/components.css">
+<link rel="stylesheet" href="../css/pages.css">
+</head>
+<body data-page="customer">
+
+<div class="app-shell">
+  <div id="sidebarMount"></div>
+
+  <div class="main-col">
+    <div id="navbarMount"></div>
+
+    <main class="content">
+      <div id="errorBanner" class="error-banner"></div>
+
+      <div class="kpi-grid" style="margin-bottom:18px;">
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-label">Customer Health Score</span><div class="kpi-icon blue"><i class="bi bi-heart-pulse"></i></div></div>
+          <div class="kpi-value" id="customerHealthScore">0</div>
+          <span class="kpi-delta up" id="customerHealthStatus">Monitoring</span>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-label">Repeat Purchase Rate</span><div class="kpi-icon green"><i class="bi bi-arrow-repeat"></i></div></div>
+          <div class="kpi-value" id="repeatRateValue">0%</div>
+          <span class="kpi-delta up" id="repeatRateNote">Waiting for retention signal</span>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-label">Avg. Days Between Orders</span><div class="kpi-icon amber"><i class="bi bi-clock-history"></i></div></div>
+          <div class="kpi-value" id="orderGapValue">0</div>
+          <span class="kpi-delta up" id="orderGapNote">Waiting for reorder cadence</span>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-label">At-Risk Share</span><div class="kpi-icon violet"><i class="bi bi-exclamation-circle"></i></div></div>
+          <div class="kpi-value" id="riskShareValue">0%</div>
+          <span class="kpi-delta down" id="riskShareNote">Waiting for risk signal</span>
+        </div>
+      </div>
+
+      <div class="section-title"><h2>Customer Health</h2><span class="hint">From repeat behaviour to churn-risk focus</span></div>
+      <div class="row-2-1">
+        <div class="panel">
+          <div class="panel-head"><div><h3>Repeat vs New Customer Trend</h3><div class="desc">Monthly customer mix across acquisition and retention</div></div></div>
+          <div class="panel-body"><div style="height:280px;"><canvas id="retentionTrendChart"></canvas></div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Segment Mix</h3></div>
+          <div class="panel-body">
+            <div style="height:220px;"><canvas id="segmentMixChart"></canvas></div>
+            <div class="legend-list" id="segmentLegend"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title"><h2>Retention Risk</h2><span class="hint">Where churn pressure is building</span></div>
+      <div class="row-1-1">
+        <div class="panel">
+          <div class="panel-head"><div><h3>Top Risky Regions</h3><div class="desc">States with the highest share of at-risk customers</div></div></div>
+          <div class="panel-body"><div style="height:260px;"><canvas id="riskRegionsChart"></canvas></div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Segment Summary</h3></div>
+          <div class="panel-body tight">
+            <table class="data-table">
+              <thead><tr><th>Segment</th><th class="num">Customers</th><th class="num">Revenue</th><th class="num">Avg. Orders</th></tr></thead>
+              <tbody id="segmentSummaryBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title"><h2>Retention Playbook</h2><span class="hint">Recommended action by customer-health signal</span></div>
+      <div class="panel">
+        <div class="panel-body"><div class="customer-rec-grid" id="customerRecommendations"></div></div>
+      </div>
+
+      <div id="footerMount"></div>
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/charts.js"></script>
+<script src="../js/customer.js"></script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anomalies · AI Retail War Room</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link rel="stylesheet" href="../css/main.css">
+<link rel="stylesheet" href="../css/components.css">
+<link rel="stylesheet" href="../css/pages.css">
+</head>
+<body data-page="anomaly">
+
+<div class="app-shell">
+  <div id="sidebarMount"></div>
+
+  <div class="main-col">
+    <div id="navbarMount"></div>
+
+    <main class="content">
+      <div id="errorBanner" class="error-banner"></div>
+
+      <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:8px;">
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-label">Total Detected</span><div class="kpi-icon blue"><i class="bi bi-search"></i></div></div>
+          <div class="kpi-value" id="statTotal">0</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-label">Critical</span><div class="kpi-icon amber"><i class="bi bi-exclamation-triangle-fill"></i></div></div>
+          <div class="kpi-value" id="statCritical">0</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><span class="kpi-label">Opportunities</span><div class="kpi-icon green"><i class="bi bi-graph-up-arrow"></i></div></div>
+          <div class="kpi-value" id="statOpportunity">0</div>
+        </div>
+      </div>
+
+      <div class="section-title"><h2>Detected Anomalies</h2><span class="hint">Severity, root cause and recommended action</span></div>
+
+      <div class="anomaly-filter-bar">
+        <button class="btn-outline active" data-filter="all">All</button>
+        <button class="btn-outline" data-filter="critical">Critical</button>
+        <button class="btn-outline" data-filter="high">High</button>
+        <button class="btn-outline" data-filter="opportunity">Opportunity</button>
+        <button class="btn-outline" data-filter="info">Info</button>
+      </div>
+
+      <div id="anomalyCardList"></div>
+
+      <div id="footerMount"></div>
+    </main>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/anomaly.js"></script>
+</body>
+</html>
