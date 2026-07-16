@@ -1,8 +1,7 @@
 import pandas as pd
 
 from sklearn.ensemble import IsolationForest
-
-from repositories.analytics_repository import revenue_growth
+from backend.repositories.analytics_repository import revenue_growth
 
 
 SEVERITY_ORDER = {

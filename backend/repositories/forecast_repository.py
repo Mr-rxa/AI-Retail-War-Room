@@ -1,4 +1,4 @@
-from database import execute_query
+from backend.database import execute_query
 
 
 def sales_history():

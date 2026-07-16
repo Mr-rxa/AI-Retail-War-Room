@@ -1,10 +1,8 @@
 from flask import Blueprint, request
 
-from services.forecast_service import forecast_sales
-
-from utils.api_response import success, error
-
-from utils.cache import cache
+from backend.services.forecast_service import forecast_sales
+from backend.utils.api_response import success, error
+from backend.utils.cache import cache
 
 forecast_controller = Blueprint(
     "forecast",

@@ -1,9 +1,9 @@
 from flask import Blueprint
 
-from services.analytics_service import analytics_summary
+from backend.services.analytics_service import analytics_summary
 
-from utils.api_response import success
-from utils.cache import cache
+from backend.utils.api_response import success
+from backend.utils.cache import cache
 
 analytics_controller = Blueprint(
     "analytics",

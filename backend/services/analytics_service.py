@@ -1,4 +1,4 @@
-from repositories.analytics_repository import (
+from backend.repositories.analytics_repository import (
     revenue_growth,
     monthly_revenue,
     monthly_orders,
@@ -15,12 +15,12 @@ from repositories.analytics_repository import (
     delivery_performance
 )
 
-from services.anomaly_service import detect_anomalies
-from services.business_health_service import business_health
-from services.customer_intelligence_service import build_customer_intelligence
-from services.insight_service import generate_insights
-from services.recommendation_service import generate_recommendations
-from services.forecast_service import forecast_sales
+from backend.services.anomaly_service import detect_anomalies
+from backend.services.business_health_service import business_health
+from backend.services.customer_intelligence_service import build_customer_intelligence
+from backend.services.insight_service import generate_insights
+from backend.services.recommendation_service import generate_recommendations
+from backend.services.forecast_service import forecast_sales
 def analytics_summary():
 
     analytics = {

@@ -1,4 +1,4 @@
-from repositories.analytics_repository import (
+from backend.repositories.analytics_repository import (
     repeat_vs_new_customers_monthly,
     customer_segments,
     average_days_between_orders,

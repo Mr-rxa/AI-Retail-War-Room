@@ -1,7 +1,7 @@
 from flask import Blueprint, request
 
-from services.dashboard_service import get_dashboard
-from utils.api_response import success
+from backend.services.dashboard_service import get_dashboard
+from backend.utils.api_response import success
 
 dashboard_controller = Blueprint("dashboard", __name__)
 

@@ -1,8 +1,8 @@
 from flask import Blueprint
 
-from services.anomaly_service import anomaly_summary
-from utils.api_response import success
-from utils.cache import cache
+from backend.services.anomaly_service import anomaly_summary
+from backend.utils.api_response import success
+from backend.utils.cache import cache
 
 anomaly_controller = Blueprint("anomaly", __name__)
 

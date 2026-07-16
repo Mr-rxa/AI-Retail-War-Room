@@ -1,11 +1,11 @@
 from flask import Blueprint
 
-from services.analytics_service import analytics_summary
+from backend.services.analytics_service import analytics_summary
 
-from services.ai_service import business_advisor
+from backend.services.ai_service import business_advisor
 
-from utils.api_response import success
-from utils.cache import cache
+from backend.utils.api_response import success
+from backend.utils.cache import cache
 
 ai_controller = Blueprint(
     "ai",

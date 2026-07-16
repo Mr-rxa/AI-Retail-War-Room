@@ -1,14 +1,13 @@
 from flask import Flask
 from flask_cors import CORS
 
-from controllers.ai_controller import ai_controller
-from controllers.analytics_controller import analytics_controller
-from controllers.anomaly_controller import anomaly_controller
-from controllers.dashboard_controller import dashboard_controller
-from controllers.forecast_controller import forecast_controller
-
-from middleware.error_handler import register_error_handlers
-from utils.cache import cache
+from backend.controllers.ai_controller import ai_controller
+from backend.controllers.analytics_controller import analytics_controller
+from backend.controllers.anomaly_controller import anomaly_controller
+from backend.controllers.dashboard_controller import dashboard_controller
+from backend.controllers.forecast_controller import forecast_controller
+from backend.middleware.error_handler import register_error_handlers
+from backend.utils.cache import cache
 from flasgger import Swagger
 
 

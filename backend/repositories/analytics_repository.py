@@ -1,4 +1,4 @@
-from database import execute_query, execute_one
+from backend.database import execute_query, execute_one
 
 
 def revenue_growth():

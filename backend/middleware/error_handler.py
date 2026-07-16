@@ -1,6 +1,6 @@
 from loguru import logger
 
-from utils.api_response import error
+from backend.utils.api_response import error
 
 
 def handle_exception(e):

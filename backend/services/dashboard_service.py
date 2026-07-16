@@ -1,4 +1,4 @@
-from repositories.dashboard_repository import *
+from backend.repositories.dashboard_repository import *
 
 def get_dashboard(filters=None):
 

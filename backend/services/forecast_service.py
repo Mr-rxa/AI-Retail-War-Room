@@ -2,8 +2,8 @@ import pandas as pd
 
 from prophet import Prophet
 
-from repositories.forecast_repository import sales_history
-from utils.cache import cache
+from backend.repositories.forecast_repository import sales_history
+from backend.utils.cache import cache
 
 
 @cache.memoize(timeout=60)
