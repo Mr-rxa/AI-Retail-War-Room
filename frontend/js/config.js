@@ -4,7 +4,7 @@
  */
 
 const CONFIG = Object.freeze({
-  API_BASE_URL: 'http://127.0.0.1:5000/api',
+  API_BASE_URL: '/api',
   APP_NAME: 'AI Retail',
   APP_SUBTITLE: 'War Room'
 });
