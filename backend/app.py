@@ -1,6 +1,6 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_cors import CORS
-
+import os
 from backend.controllers.ai_controller import ai_controller
 from backend.controllers.analytics_controller import analytics_controller
 from backend.controllers.anomaly_controller import anomaly_controller
@@ -10,8 +10,17 @@ from backend.middleware.error_handler import register_error_handlers
 from backend.utils.cache import cache
 from flasgger import Swagger
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-app = Flask(__name__)
+FRONTEND_DIR = os.path.join(BASE_DIR, "..", "frontend")
+PAGES_DIR = os.path.join(FRONTEND_DIR, "pages")
+
+app = Flask(
+    __name__,
+    static_folder=FRONTEND_DIR,
+    static_url_path=""
+)
+
 Swagger(app)
 cache.init_app(app)
 
@@ -45,12 +54,38 @@ app.register_blueprint(
 )
 
 @app.route("/")
-def home():
+def index():
+    return send_from_directory(FRONTEND_DIR, "index.html")
 
-    return {
-        "project": "AI Retail War Room",
-        "status": "Running"
-    }
+# Pages
+@app.route("/dashboard")
+def dashboard():
+    return send_from_directory(PAGES_DIR, "dashboard.html")
+
+@app.route("/advisor")
+def advisor():
+    return send_from_directory(PAGES_DIR, "advisor.html")
+
+@app.route("/anomaly")
+def anomaly():
+    return send_from_directory(PAGES_DIR, "anomaly.html")
+
+@app.route("/customer")
+def customer():
+    return send_from_directory(PAGES_DIR, "customer.html")
+
+@app.route("/forecast")
+def forecast():
+    return send_from_directory(PAGES_DIR, "forecast.html")
+
+@app.route("/insights")
+def insights():
+    return send_from_directory(PAGES_DIR, "insights.html")
+
+# Serve CSS, JS, Images, Fonts, Components, etc.
+@app.route("/<path:path>")
+def static_files(path):
+    return send_from_directory(FRONTEND_DIR, path)
 
 
 @app.route("/favicon.ico")
