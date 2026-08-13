@@ -98,7 +98,7 @@ def detect_anomalies(revenue_data):
 
             severity = (
                 "Opportunity"
-                if growth > 20
+                if growth > 0
                 else "Info"
             )
 
@@ -158,11 +158,23 @@ def detect_anomalies(revenue_data):
     return anomalies
 
 
-def anomaly_summary():
+from backend.engines import session_store
+from backend.engines import csv_engine
 
-    anomalies = detect_anomalies(
-        revenue_growth()
-    )
+
+from backend.engines.demo_data import get_demo_analytics
+
+def anomaly_summary(session_id=None):
+
+    if session_id and session_store.has(session_id):
+        rev_growth_data = csv_engine.revenue_growth(session_id)
+    else:
+        rev_growth_data = revenue_growth()
+        if not rev_growth_data:
+            rev_growth_data = get_demo_analytics()["revenue_growth"]
+
+    anomalies = detect_anomalies(rev_growth_data)
+
 
     summary = {
         "total": len(anomalies),
@@ -182,3 +194,4 @@ def anomaly_summary():
         "summary": summary,
         "anomalies": anomalies
     }
+

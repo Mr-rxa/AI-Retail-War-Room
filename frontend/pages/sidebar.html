@@ -7,17 +7,29 @@
     </div>
   </div>
 
+  <div class="sidebar-section-label">Data Source</div>
+  <ul class="sidebar-nav">
+    <li><a href="/upload" data-nav="upload"><i class="bi bi-cloud-upload-fill"></i>Upload CSV Data</a></li>
+  </ul>
+
   <div class="sidebar-section-label">Intelligence</div>
   <ul class="sidebar-nav">
-    <li><a href="dashboard.html" data-nav="dashboard"><i class="bi bi-grid-1x2-fill"></i>Dashboard</a></li>
-    <li><a href="customer.html" data-nav="customer"><i class="bi bi-people-fill"></i>Customer Intelligence</a></li>
-    <li><a href="forecast.html" data-nav="forecast"><i class="bi bi-graph-up-arrow"></i>Forecast</a></li>
-    <li><a href="anomaly.html" data-nav="anomaly"><i class="bi bi-exclamation-triangle"></i>Anomalies</a></li>
-    <li><a href="insights.html" data-nav="insights"><i class="bi bi-lightbulb"></i>Insights</a></li>
-    <li><a href="advisor.html" data-nav="advisor"><i class="bi bi-stars"></i>AI Advisor</a></li>
+    <li><a href="/dashboard" data-nav="dashboard"><i class="bi bi-grid-1x2-fill"></i>Dashboard</a></li>
+    <li><a href="/customer" data-nav="customer"><i class="bi bi-people-fill"></i>Customer Intelligence</a></li>
+    <li><a href="/forecast" data-nav="forecast"><i class="bi bi-graph-up-arrow"></i>Forecast</a></li>
+    <li><a href="/anomaly" data-nav="anomaly"><i class="bi bi-exclamation-triangle"></i>Anomalies</a></li>
+    <li><a href="/insights" data-nav="insights"><i class="bi bi-lightbulb"></i>Insights</a></li>
+    <li><a href="/advisor" data-nav="advisor"><i class="bi bi-stars"></i>AI Advisor</a></li>
   </ul>
 
   <div class="sidebar-footer">
+    <div class="data-source-badge" id="sidebarDataSourceBadge" style="margin-bottom: 12px; width: 100%; justify-content: space-between;">
+      <span style="display: flex; align-items: center; gap: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+        <span class="dot" id="dataSourceDot"></span>
+        <span id="dataSourceName" style="font-size: 11px; overflow: hidden; text-overflow: ellipsis;">Demo Data (Olist)</span>
+      </span>
+      <button id="clearDataBtn" title="Reset to Demo Data" style="display: none;"><i class="bi bi-x-circle-fill"></i></button>
+    </div>
     <div class="sidebar-user">
       <div class="avatar">RS</div>
       <div>

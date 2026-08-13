@@ -1,0 +1,143 @@
+/**
+ * animations.css — Keyframes, Scroll-Reveal Utility Classes & Motion Helpers
+ */
+
+/* Scroll progress bar */
+#scrollProgressBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  height: var(--scroll-progress-h);
+  width: 0%;
+  background: linear-gradient(90deg, #B85C38, #C4872A, #5A7D5F);
+  transition: width 0.05s linear;
+  box-shadow: 0 0 12px rgba(184, 92, 56, 0.4);
+}
+
+/* Reveal classes */
+.reveal-up {
+  opacity: 0;
+  transform: translateY(36px);
+  will-change: opacity, transform;
+}
+
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-36px);
+  will-change: opacity, transform;
+}
+
+.reveal-right {
+  opacity: 0;
+  transform: translateX(36px);
+  will-change: opacity, transform;
+}
+
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.95);
+  will-change: opacity, transform;
+}
+
+.reveal-rotate {
+  opacity: 0;
+  transform: rotate(2deg) translateY(20px);
+  will-change: opacity, transform;
+}
+
+.word-wrap {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+.word {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+/* Keyframes */
+@keyframes shimmerWarm {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+@keyframes shimmerSweep {
+  from { background-position: 200% center; }
+  to { background-position: -50% center; }
+}
+
+@keyframes borderGlow {
+  0%, 100% { border-color: rgba(184, 92, 56, 0.2); }
+  50% { border-color: rgba(184, 92, 56, 0.5); }
+}
+
+@keyframes badgePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(90, 125, 95, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(90, 125, 95, 0); }
+}
+
+@keyframes rippleExpand {
+  to {
+    width: 200px;
+    height: 200px;
+    margin: -100px;
+    opacity: 0;
+  }
+}
+
+@keyframes morphBlob {
+  0%, 100% { border-radius: 60% 40% 70% 30% / 40% 60% 30% 70%; transform: translate(0,0) scale(1); }
+  25% { border-radius: 40% 60% 30% 70% / 60% 30% 70% 40%; transform: translate(20px, -15px) scale(1.05); }
+  50% { border-radius: 70% 30% 40% 60% / 30% 70% 40% 60%; transform: translate(-10px, 20px) scale(0.97); }
+  75% { border-radius: 30% 70% 60% 40% / 70% 40% 60% 30%; transform: translate(15px, 10px) scale(1.03); }
+}
+
+@keyframes iconBounce {
+  0% { transform: scale(1) rotate(0deg); }
+  40% { transform: scale(1.25) rotate(-8deg); }
+  70% { transform: scale(0.95) rotate(4deg); }
+  100% { transform: scale(1.1) rotate(0deg); }
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Skeleton warm shimmer */
+.skel {
+  background: linear-gradient(90deg, #EDE6D8 0%, #F0E9DC 25%, #EDE6D8 50%, #F0E9DC 75%, #EDE6D8 100%);
+  background-size: 400% 100%;
+  animation: shimmerWarm 1.8s ease-in-out infinite;
+  border-radius: 6px;
+}
+.skel-kpi { height: 120px; border-radius: var(--radius-md); }
+.skel-chart { height: 320px; border-radius: var(--radius-md); }
+.skel-text { height: 14px; width: 65%; margin-bottom: 8px; }
+.skel-title { height: 20px; width: 40%; margin-bottom: 16px; }
+
+/* Custom Cursor */
+.custom-cursor {
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  mix-blend-mode: multiply;
+  opacity: 0.75;
+  transition: transform 0.15s var(--ease-spring), width 0.2s, height 0.2s, background 0.2s, border 0.2s;
+  will-change: transform;
+  transform: translate(-50%, -50%);
+}
+
+.custom-cursor.hovering {
+  width: 38px;
+  height: 38px;
+  opacity: 0.35;
+  border: 1.5px solid var(--accent);
+  background: transparent;
+}

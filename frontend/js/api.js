@@ -19,9 +19,15 @@ const API = (() => {
   }
 
   async function request(path) {
+    const headers = { 'Accept': 'application/json' };
+    const sessionId = localStorage.getItem('airw_session_id');
+    if (sessionId) {
+      headers['X-Session-ID'] = sessionId;
+    }
+
     const res = await fetch(`${CONFIG.API_BASE_URL}${path}`, {
       method: 'GET',
-      headers: { 'Accept': 'application/json' }
+      headers
     });
     if (!res.ok) throw new Error(`Request to ${path} failed with status ${res.status}`);
     const json = await res.json();
@@ -30,12 +36,31 @@ const API = (() => {
   }
 
   function getDashboard(filters = {}) { return request(`/dashboard${toQuery(filters)}`); }
-  function getAnalyticsSummary() { return request('/analytics/summary'); }
+  function getAnalyticsSummary(filters = {}) { return request(`/analytics/summary${toQuery(filters)}`); }
   function getForecast() { return request('/forecast/sales'); }
   function getAdvisorReport({ refresh = false } = {}) {
     return request(refresh ? `/ai/advisor?refresh=${Date.now()}` : '/ai/advisor');
   }
   function getAnomalies() { return request('/anomalies'); }
+  function getDataSourceStatus() { return request('/upload/status'); }
+  async function clearCustomData() {
+    const sessionId = localStorage.getItem('airw_session_id');
+    const headers = { 'Accept': 'application/json' };
+    if (sessionId) headers['X-Session-ID'] = sessionId;
+    
+    const res = await fetch(`${CONFIG.API_BASE_URL}/upload/clear`, {
+      method: 'POST',
+      headers
+    });
+    if (!res.ok) throw new Error(`Clear request failed with status ${res.status}`);
+    localStorage.removeItem('airw_currency');
+    const json = await res.json();
+    return json.data;
+  }
 
-  return { getDashboard, getAnalyticsSummary, getForecast, getAdvisorReport, getAnomalies };
+
+  return { 
+    getDashboard, getAnalyticsSummary, getForecast, getAdvisorReport, 
+    getAnomalies, getDataSourceStatus, clearCustomData 
+  };
 })();

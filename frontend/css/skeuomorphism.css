@@ -1,0 +1,102 @@
+/**
+ * skeuomorphism.css — Tactile Physical Textures, Paper Grain, Stamps & Embossing
+ */
+
+/* Skeuomorphic Paper Card */
+.skeu-card {
+  background-color: #FAF7F2;
+  background-image:
+    url('../assets/paper-texture.svg'),
+    url('../assets/noise.svg');
+  background-blend-mode: multiply, overlay;
+  border: 1px solid rgba(180, 155, 120, 0.35);
+  border-radius: var(--radius-md);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.95) inset,
+    0 -1px 0 rgba(140, 110, 80, 0.15) inset,
+    1px 0 0 rgba(255, 255, 255, 0.8) inset,
+    -1px 0 0 rgba(140, 110, 80, 0.10) inset,
+    0 4px 8px rgba(140, 110, 80, 0.10),
+    0 12px 24px rgba(140, 110, 80, 0.06);
+  position: relative;
+}
+
+/* Card Corner Fold Effect */
+.skeu-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(225deg, rgba(200, 175, 140, 0.35) 45%, transparent 45%);
+  border-top-left-radius: 4px;
+  pointer-events: none;
+}
+
+/* Embossed Text Label */
+.embossed-label {
+  color: var(--text-muted);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9), 0 -1px 0 rgba(140, 110, 80, 0.15);
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  font-size: 10.5px;
+}
+
+/* Debossed Input Field */
+.debossed-input {
+  background: rgba(237, 230, 216, 0.8);
+  border: 1px solid rgba(160, 135, 105, 0.30);
+  box-shadow: var(--shadow-neuro-in);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  padding: 8px 14px;
+  transition: all 0.2s ease;
+}
+
+.debossed-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* Ink Stamp Badge */
+.badge-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border: 2px solid currentColor;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transform: rotate(-1.5deg);
+  opacity: 0.9;
+}
+
+/* Physical Push Button */
+.btn-push {
+  background: linear-gradient(180deg, #FAF7F2 0%, #EDE6D8 100%);
+  border: 1px solid rgba(140, 120, 96, 0.30);
+  border-bottom: 3px solid rgba(140, 120, 96, 0.40);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 2px 4px rgba(140, 110, 80, 0.12), 0 1px 0 rgba(255, 255, 255, 0.9) inset;
+  transition: all 0.08s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.btn-push:active {
+  border-bottom-width: 1px;
+  transform: translateY(2px);
+  box-shadow: 0 1px 2px rgba(140, 110, 80, 0.10);
+}

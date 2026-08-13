@@ -1,0 +1,262 @@
+/**
+ * upload.css — Drag-and-Drop CSV Upload Wizard Styles (Skeuomorphic & Warm Parchment)
+ */
+
+.upload-dropzone {
+  background: rgba(237, 230, 216, 0.6);
+  border: 2px dashed rgba(184, 92, 56, 0.35);
+  border-radius: var(--radius-lg);
+  padding: 50px 30px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s var(--ease-spring);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-neuro-in);
+}
+
+.upload-dropzone:hover, .upload-dropzone.dragover {
+  background: rgba(184, 92, 56, 0.06);
+  border-color: var(--accent);
+  transform: scale(1.01);
+}
+
+.upload-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: rgba(184, 92, 56, 0.12);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin: 0 auto 16px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(184, 92, 56, 0.25);
+}
+
+.upload-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  font-family: var(--font-heading);
+}
+
+.upload-hint {
+  font-size: 13px;
+  color: var(--text-muted);
+  max-width: 420px;
+  margin: 0 auto 20px;
+}
+
+/* ===== Wizard Steps ===== */
+.wizard-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  gap: 12px;
+}
+
+.wizard-steps::before {
+  content: '';
+  position: absolute;
+  top: 18px;
+  left: 30px;
+  right: 30px;
+  height: 2px;
+  background: var(--border);
+  z-index: 1;
+}
+
+.wizard-step {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-canvas);
+  padding: 0 8px;
+}
+
+.step-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 2px solid var(--border);
+  color: var(--text-muted);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.25s var(--ease-spring);
+}
+
+.wizard-step.active .step-num {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #FAF7F2;
+  box-shadow: 0 0 16px rgba(184, 92, 56, 0.4);
+}
+
+.wizard-step.completed .step-num {
+  background: var(--accent-2);
+  border-color: var(--accent-2);
+  color: #FAF7F2;
+}
+
+.step-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.wizard-step.active .step-label {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.wizard-step.completed .step-label {
+  color: var(--accent-2);
+}
+
+/* ===== Step Panels ===== */
+.step-panel {
+  display: none;
+}
+
+.step-panel.active {
+  display: block;
+}
+
+/* ===== Currency Grid ===== */
+.currency-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.currency-card {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-spring);
+  box-shadow: var(--shadow-xs);
+  user-select: none;
+}
+
+.currency-card:hover {
+  border-color: rgba(184, 92, 56, 0.4);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+  background: rgba(250, 247, 242, 0.95);
+}
+
+.currency-card.selected {
+  border-color: var(--accent);
+  background: rgba(184, 92, 56, 0.08);
+  box-shadow: 0 4px 16px rgba(184, 92, 56, 0.18);
+}
+
+.currency-symbol {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: var(--font-display);
+  width: 36px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.currency-details .code {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.currency-details .name {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ===== Mapping Table & Selects ===== */
+.mapping-select {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-body);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.mapping-select:focus {
+  border-color: var(--accent);
+}
+
+.field-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.field-tag.required {
+  background: rgba(184, 92, 56, 0.12);
+  color: var(--accent);
+  border: 1px solid rgba(184, 92, 56, 0.3);
+}
+
+.field-tag.optional {
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.confidence-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.confidence-high {
+  background: rgba(90, 125, 95, 0.14);
+  color: var(--accent-2);
+  border: 1px solid rgba(90, 125, 95, 0.3);
+}
+
+.confidence-medium {
+  background: rgba(196, 135, 42, 0.14);
+  color: var(--accent-amber);
+  border: 1px solid rgba(196, 135, 42, 0.3);
+}
+
+.confidence-none {
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}

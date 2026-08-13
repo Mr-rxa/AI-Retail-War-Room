@@ -1,16 +1,17 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
 from backend.services.anomaly_service import anomaly_summary
 from backend.utils.api_response import success
-from backend.utils.cache import cache
 
 anomaly_controller = Blueprint("anomaly", __name__)
 
 
 @anomaly_controller.route("/anomalies")
-@cache.cached(timeout=120)
 def anomalies():
 
+    session_id = request.headers.get("X-Session-ID") or request.cookies.get("session_id")
+
     return success(
-        anomaly_summary()
+        anomaly_summary(session_id=session_id)
     )
+

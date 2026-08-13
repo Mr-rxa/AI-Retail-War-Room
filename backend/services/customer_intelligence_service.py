@@ -8,10 +8,19 @@ from backend.repositories.analytics_repository import (
 
 def build_customer_intelligence(analytics):
 
-    trend = repeat_vs_new_customers_monthly()
-    segments = customer_segments()
-    order_gap = average_days_between_orders()
-    risky_regions = risky_customer_regions()
+    trend = analytics.get("repeat_vs_new") or repeat_vs_new_customers_monthly()
+    segments = analytics.get("customer_segments") or customer_segments()
+    
+    gap_val = analytics.get("avg_days_between_orders")
+    if isinstance(gap_val, dict):
+        avg_gap = float(gap_val.get("avg_days_between_orders", 0) or 0)
+    elif gap_val is not None:
+        avg_gap = float(gap_val or 0)
+    else:
+        order_gap = average_days_between_orders()
+        avg_gap = float(order_gap.get("avg_days_between_orders", 0) or 0)
+        
+    risky_regions = analytics.get("risky_regions") or risky_customer_regions()
 
     retention = analytics.get("customer_retention", {})
     repeat_customers = float(retention.get("repeat_customers", 0) or 0)
@@ -19,10 +28,6 @@ def build_customer_intelligence(analytics):
     repeat_rate = (
         (repeat_customers / total_customers) * 100
         if total_customers else 0
-    )
-
-    avg_gap = float(
-        order_gap.get("avg_days_between_orders", 0) or 0
     )
 
     segment_map = {
@@ -140,12 +145,13 @@ def build_retention_recommendations(
             "action": "Customers are taking too long to reorder. Use reminder campaigns, replenishment prompts and targeted discount windows."
         })
 
-    if risky_regions:
+    if risky_regions and len(risky_regions) > 0:
         top_region = risky_regions[0]
+        region_name = top_region.get("customer_state") or top_region.get("region") or "Unknown"
         recommendations.append({
             "title": "Protect the riskiest region",
-            "focus": top_region["customer_state"],
-            "action": f"{top_region['customer_state']} shows the highest retention risk. Review delivery experience, local assortment and repeat-order incentives."
+            "focus": region_name,
+            "action": f"{region_name} shows the highest retention risk. Review delivery experience, local assortment and repeat-order incentives."
         })
 
     at_risk = float(

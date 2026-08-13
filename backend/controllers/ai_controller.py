@@ -1,22 +1,21 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
 from backend.services.analytics_service import analytics_summary
 
 from backend.services.ai_service import business_advisor
 
 from backend.utils.api_response import success
-from backend.utils.cache import cache
 
 ai_controller = Blueprint(
     "ai",
     __name__
 )
 @ai_controller.route("/advisor")
-@cache.cached(timeout=180, query_string=True)
-
 def advisor():
 
-    analytics = analytics_summary()
+    session_id = request.headers.get("X-Session-ID") or request.cookies.get("session_id")
+
+    analytics = analytics_summary(session_id=session_id)
 
     report = business_advisor(analytics)
 
@@ -25,3 +24,4 @@ def advisor():
         "report": report
 
     })
+

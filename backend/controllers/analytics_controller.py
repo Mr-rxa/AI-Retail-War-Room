@@ -1,9 +1,8 @@
-from flask import Blueprint
+from flask import Blueprint, request
 
 from backend.services.analytics_service import analytics_summary
 
 from backend.utils.api_response import success
-from backend.utils.cache import cache
 
 analytics_controller = Blueprint(
     "analytics",
@@ -11,10 +10,14 @@ analytics_controller = Blueprint(
 )
 
 @analytics_controller.route("/summary")
-@cache.cached(timeout=120)
-
 def summary():
-
+    session_id = request.headers.get("X-Session-ID") or request.cookies.get("session_id")
+    filters = {
+        "year": request.args.get("year"),
+        "state": request.args.get("state"),
+        "payment": request.args.get("payment")
+    }
     return success(
-        analytics_summary()
+        analytics_summary(session_id=session_id, filters=filters)
     )
+

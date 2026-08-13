@@ -3,13 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Forecast · AI Retail War Room</title>
+<title>Sales &amp; Financial Forecast — AI Retail War Room</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link rel="stylesheet" href="../css/main.css">
 <link rel="stylesheet" href="../css/components.css">
 <link rel="stylesheet" href="../css/pages.css">
+
+<!-- GSAP + ScrollTrigger -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
+<!-- Lenis Smooth Scroll -->
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
 </head>
 <body data-page="forecast">
+
+<div class="blob-wrap">
+  <div class="blob blob-terracotta"></div>
+  <div class="blob blob-mauve"></div>
+</div>
 
 <div class="app-shell">
   <div id="sidebarMount"></div>
@@ -20,24 +32,24 @@
     <main class="content">
       <div id="errorBanner" class="error-banner"></div>
 
-      <div class="panel" style="margin-bottom:16px;">
+      <div class="panel reveal-up" style="margin-bottom:20px;">
         <div class="panel-body">
-          <div class="forecast-stat-row">
-            <div class="forecast-stat"><div class="fs-label">Trend</div><div class="fs-value" id="statTrend">—</div></div>
-            <div class="forecast-stat"><div class="fs-label">Change</div><div class="fs-value" id="statChange">—</div></div>
-            <div class="forecast-stat"><div class="fs-label">Avg. Forecast</div><div class="fs-value" id="statAvg">—</div></div>
-            <div class="forecast-stat"><div class="fs-label">Confidence Width</div><div class="fs-value" id="statConfidence">—</div></div>
+          <div class="forecast-stat-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;text-align:center;">
+            <div class="forecast-stat"><div class="fs-label" style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);">Revenue Trajectory</div><div class="fs-value" id="statTrend" style="font-family:var(--font-display);font-size:28px;font-weight:600;color:var(--text-primary);">—</div></div>
+            <div class="forecast-stat"><div class="fs-label" style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);">Projected Shift</div><div class="fs-value" id="statChange" style="font-family:var(--font-display);font-size:28px;font-weight:600;color:var(--accent);">—</div></div>
+            <div class="forecast-stat"><div class="fs-label" style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);">Avg 30-Day Sales</div><div class="fs-value" id="statAvg" style="font-family:var(--font-display);font-size:28px;font-weight:600;color:var(--text-primary);">—</div></div>
+            <div class="forecast-stat"><div class="fs-label" style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);">Confidence Interval</div><div class="fs-value" id="statConfidence" style="font-family:var(--font-display);font-size:28px;font-weight:600;color:var(--accent-2);">—</div></div>
           </div>
         </div>
       </div>
 
-      <div class="section-title"><h2>Historical Sales &amp; Forecast</h2><span class="hint">90 days actual + 30-day projection with confidence interval</span></div>
-      <div class="panel">
-        <div class="panel-body"><div style="height:340px;"><canvas id="forecastFullChart"></canvas></div></div>
+      <div class="max-section-head reveal-up"><h2>Facebook Prophet 30-Day Sales Forecast</h2></div>
+      <div class="panel reveal-up" style="margin-bottom:24px;">
+        <div class="panel-body"><div style="height:350px;"><canvas id="forecastFullChart"></canvas></div></div>
       </div>
 
-      <div class="section-title"><h2>Forecast Detail</h2><span class="hint">Latest actual: <strong id="statLatestActual">—</strong> · Highest: <strong id="statHighest">—</strong> · Lowest: <strong id="statLowest">—</strong> · Horizon: <strong id="statDays">—</strong></span></div>
-      <div class="panel">
+      <div class="section-title reveal-up"><h2>Financial Forecast Data Points</h2><span class="hint">Latest actual: <strong id="statLatestActual">—</strong> · Highest projection: <strong id="statHighest">—</strong> · Lowest projection: <strong id="statLowest">—</strong> · Horizon: <strong id="statDays">—</strong></span></div>
+      <div class="panel reveal-up">
         <div class="panel-body tight" style="max-height:480px;overflow-y:auto;">
           <table class="data-table">
             <thead><tr><th>Date</th><th class="num">Forecast</th><th class="num">Lower Bound</th><th class="num">Upper Bound</th></tr></thead>
@@ -58,5 +70,9 @@
 <script src="../js/api.js"></script>
 <script src="../js/charts.js"></script>
 <script src="../js/forecast.js"></script>
+<script src="../js/motion.js"></script>
+<script src="../js/particles.js"></script>
+<script src="../js/preloader.js"></script>
+<script src="../js/command.js"></script>
 </body>
 </html>

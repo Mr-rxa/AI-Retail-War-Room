@@ -1,0 +1,236 @@
+/**
+ * effects.css — Multi-Effect Registry (Neumorphism, Claymorphism, Glass levels, Min/Max, 3D Tilt)
+ */
+
+/* ── 1. Glassmorphism Hierarchy ── */
+.glass-l1 {
+  background: var(--surface-glass);
+  backdrop-filter: blur(20px) saturate(160%) brightness(1.02);
+  -webkit-backdrop-filter: blur(20px) saturate(160%) brightness(1.02);
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 12px 32px rgba(100, 80, 60, 0.10);
+}
+
+.glass-l2 {
+  background: var(--sidebar-bg);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+}
+
+.glass-l3 {
+  background: rgba(250, 247, 242, 0.96);
+  backdrop-filter: blur(32px) saturate(200%);
+  -webkit-backdrop-filter: blur(32px) saturate(200%);
+  border: 1px solid rgba(184, 92, 56, 0.18);
+  box-shadow: 0 32px 80px rgba(100, 80, 60, 0.20), 0 1px 0 rgba(255, 255, 255, 0.95) inset;
+}
+
+.glass-iridescent {
+  position: relative;
+  border: 1px solid transparent;
+}
+.glass-iridescent::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(184, 92, 56, 0.35), rgba(196, 135, 42, 0.2), rgba(90, 125, 95, 0.25), rgba(184, 92, 56, 0.35));
+  background-size: 300% 300%;
+  animation: iridescent 6s ease infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+@keyframes iridescent {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ── 2. Neumorphism ── */
+.neuro-well {
+  background: var(--surface-neumorphic);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-neuro-in);
+  padding: 16px 20px;
+}
+
+.neuro-select {
+  background: var(--surface-neumorphic);
+  border: 1px solid rgba(140, 120, 96, 0.2);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-neuro-out);
+  padding: 10px 14px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  appearance: none;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+}
+.neuro-select:focus {
+  box-shadow: var(--shadow-neuro-in);
+  outline: none;
+}
+
+.neuro-toggle {
+  background: var(--surface-neumorphic);
+  border-radius: var(--radius-pill);
+  padding: 4px;
+  box-shadow: var(--shadow-neuro-out);
+  display: inline-flex;
+  gap: 4px;
+}
+.neuro-toggle button {
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-pill);
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s var(--ease-spring);
+}
+.neuro-toggle button.active {
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* ── 3. Claymorphism ── */
+.clay-card {
+  background: var(--surface);
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 10px 0 rgba(184, 92, 56, 0.16),
+    0 12px 24px rgba(100, 80, 60, 0.12),
+    0 1px 0 rgba(255, 255, 255, 0.95) inset;
+  transition: transform 0.35s var(--ease-bounce), box-shadow 0.35s ease;
+}
+.clay-card:hover {
+  transform: translateY(-8px);
+  box-shadow:
+    0 16px 0 rgba(184, 92, 56, 0.14),
+    0 24px 40px rgba(100, 80, 60, 0.16),
+    0 1px 0 rgba(255, 255, 255, 0.95) inset;
+}
+
+.clay-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.10), 0 6px 12px rgba(0, 0, 0, 0.06), 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+}
+
+/* ── 4. Minimalism ── */
+.min-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(140, 120, 96, 0.25), transparent);
+  margin: 40px 0;
+}
+
+.min-metric-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.min-metric-row:last-child { border-bottom: none; }
+
+.min-metric-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.min-metric-value {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.ghost-panel {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 24px 0;
+}
+
+/* ── 5. Maximalism ── */
+.max-section-head {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin: 40px 0 24px;
+}
+.max-section-head::before,
+.max-section-head::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(184, 92, 56, 0.35), transparent);
+}
+.max-section-head h2 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.max-data-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.max-data-cell {
+  background: var(--surface);
+  padding: 16px 18px;
+  transition: background 0.15s ease;
+}
+.max-data-cell:hover {
+  background: rgba(184, 92, 56, 0.04);
+}
+
+/* ── 6. Section Dots Rail ── */
+.section-nav-dots {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 50;
+}
+.section-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(140, 120, 96, 0.30);
+  transition: all 0.3s var(--ease-spring);
+  cursor: pointer;
+}
+.section-dot:hover {
+  background: var(--accent);
+  transform: scale(1.3);
+}
+.section-dot.active {
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(184, 92, 56, 0.4);
+  transform: scale(1.6);
+}

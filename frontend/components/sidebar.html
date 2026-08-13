@@ -1,28 +1,40 @@
 <aside class="sidebar">
   <div class="sidebar-brand">
-    <div class="mark">AR</div>
+    <div class="mark">RW</div>
     <div>
-      <div class="name">AI Retail</div>
-      <div class="sub">War Room</div>
+      <div class="name">AI Retail War Room</div>
+      <div class="sub">Executive Decision Intelligence</div>
     </div>
   </div>
 
-  <div class="sidebar-section-label">Intelligence</div>
+  <div class="sidebar-section-label">Data Operations</div>
   <ul class="sidebar-nav">
-    <li><a href="dashboard.html" data-nav="dashboard"><i class="bi bi-grid-1x2-fill"></i>Dashboard</a></li>
-    <li><a href="customer.html" data-nav="customer"><i class="bi bi-people-fill"></i>Customer Intelligence</a></li>
-    <li><a href="forecast.html" data-nav="forecast"><i class="bi bi-graph-up-arrow"></i>Forecast</a></li>
-    <li><a href="anomaly.html" data-nav="anomaly"><i class="bi bi-exclamation-triangle"></i>Anomalies</a></li>
-    <li><a href="insights.html" data-nav="insights"><i class="bi bi-lightbulb"></i>Insights</a></li>
-    <li><a href="advisor.html" data-nav="advisor"><i class="bi bi-stars"></i>AI Advisor</a></li>
+    <li><a href="/upload" data-nav="upload"><i class="bi bi-cloud-upload-fill nav-icon-3d"></i>Data Import (100MB)</a></li>
+  </ul>
+
+  <div class="sidebar-section-label">Decision Intelligence</div>
+  <ul class="sidebar-nav">
+    <li><a href="/dashboard" data-nav="dashboard"><i class="bi bi-grid-1x2-fill nav-icon-3d"></i>Executive Dashboard</a></li>
+    <li><a href="/customer" data-nav="customer"><i class="bi bi-speedometer2 nav-icon-3d"></i>Customer Intelligence</a></li>
+    <li><a href="/insights" data-nav="insights"><i class="bi bi-diagram-3-fill nav-icon-3d"></i>Causal Analysis</a></li>
+    <li><a href="/advisor" data-nav="advisor"><i class="bi bi-sliders nav-icon-3d"></i>AI Advisor Lab</a></li>
+    <li><a href="/anomaly" data-nav="anomaly"><i class="bi bi-shield-exclamation nav-icon-3d"></i>Anomaly Detection</a></li>
+    <li><a href="/forecast" data-nav="forecast"><i class="bi bi-graph-up-arrow nav-icon-3d"></i>Sales & Financial Forecast</a></li>
   </ul>
 
   <div class="sidebar-footer">
+    <div class="data-source-badge" id="sidebarDataSourceBadge" style="margin-bottom: 12px; width: 100%; justify-content: space-between; display: flex; align-items: center;">
+      <span style="display: flex; align-items: center; gap: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+        <span class="dot" id="dataSourceDot" style="width:7px;height:7px;border-radius:50%;background:var(--accent-2);display:inline-block;"></span>
+        <span id="dataSourceName" style="font-size: 11px; overflow: hidden; text-overflow: ellipsis; color: var(--text-muted); font-weight: 600;">Retail Dataset</span>
+      </span>
+      <button id="clearDataBtn" title="Reset to Demo Data" style="display: none; background: none; border: none; color: var(--text-muted); cursor: pointer;"><i class="bi bi-x-circle-fill"></i></button>
+    </div>
     <div class="sidebar-user">
-      <div class="avatar">RS</div>
+      <div class="avatar"><i class="bi bi-person-fill"></i></div>
       <div>
-        <div class="who">Rahul</div>
-        <div class="role">BI Analyst</div>
+        <div class="who">Retail Executive</div>
+        <div class="role">Strategy & Ops</div>
       </div>
     </div>
   </div>

@@ -9,10 +9,12 @@ dashboard_controller = Blueprint("dashboard", __name__)
 @dashboard_controller.route("/dashboard")
 def dashboard():
 
+    session_id = request.headers.get("X-Session-ID") or request.cookies.get("session_id")
+
     filters = {
         "year": request.args.get("year"),
         "state": request.args.get("state"),
         "payment": request.args.get("payment")
     }
 
-    return success(get_dashboard(filters))
+    return success(get_dashboard(filters, session_id=session_id))

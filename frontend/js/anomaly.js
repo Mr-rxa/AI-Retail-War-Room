@@ -8,11 +8,15 @@
   let activeFilter = 'all';
 
   function setTopbar() {
-    Utils.qs('#topbarTitle').textContent = 'Anomalies - Risk Monitor';
-    Utils.qs('#topbarCrumbs').textContent = 'Statistically unusual revenue events, business risk and recommended response';
-    const actions = Utils.qs('#topbarActions');
-    actions.insertAdjacentHTML('beforeend', `<button class="btn-outline" id="refreshBtn"><i class="bi bi-arrow-clockwise"></i>Refresh</button>`);
-    Utils.qs('#refreshBtn').addEventListener('click', load);
+    if (Utils.qs('#topbarTitle')) Utils.qs('#topbarTitle').textContent = 'Anomaly Detection — AI Retail War Room';
+    if (Utils.qs('#topbarCrumbs')) Utils.qs('#topbarCrumbs').textContent = 'IsolationForest revenue outliers, structural risk detection, and recommended strategic actions';
+    const refreshBtn = Utils.qs('#refreshBtn');
+    const exportBtn = Utils.qs('#exportBtn');
+    if (refreshBtn) refreshBtn.onclick = load;
+    if (exportBtn) exportBtn.onclick = () => {
+      if (!allAnomalies.length) return;
+      Utils.downloadFile(`anomalies_${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(allAnomalies, null, 2), 'application/json');
+    };
   }
 
   function setupFilters() {
@@ -38,12 +42,15 @@
     } catch (err) {
       console.error(err);
       const banner = Utils.qs('#errorBanner');
-      banner.textContent = `Couldn't load anomaly data — ${err.message}. Confirm the API is running at ${CONFIG.API_BASE_URL}, then retry.`;
-      banner.style.display = 'block';
+      if (banner) {
+        banner.textContent = `Couldn't load anomaly data — ${err.message}. Confirm the API is running at ${CONFIG.API_BASE_URL}, then retry.`;
+        banner.style.display = 'block';
+      }
     } finally {
       if (btn) { btn.disabled = false; btn.querySelector('i').classList.remove('spin'); }
     }
   }
+
 
   function renderSummary(summary) {
     Utils.qs('#statTotal').textContent = summary.total || 0;
@@ -54,9 +61,10 @@
   function render() {
     const list = Utils.qs('#anomalyCardList');
     list.innerHTML = '';
-    const filtered = activeFilter === 'all'
+    const targetFilter = String(activeFilter || 'all').toLowerCase();
+    const filtered = targetFilter === 'all'
       ? allAnomalies
-      : allAnomalies.filter(a => a.severity.toLowerCase() === activeFilter);
+      : allAnomalies.filter(a => String(a.severity || '').toLowerCase() === targetFilter);
 
     if (!filtered.length) {
       list.innerHTML = `<div style="text-align:center;padding:50px 20px;color:var(--text-muted);">
@@ -96,6 +104,10 @@
     Utils.updateScopeBanner();
     setTopbar();
     setupFilters();
+    window.addEventListener('globalFilters:changed', () => {
+      Utils.updateScopeBanner();
+      load();
+    });
     load();
   });
 })();

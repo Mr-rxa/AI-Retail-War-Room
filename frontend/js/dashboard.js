@@ -19,40 +19,55 @@
   };
 
   function setTopbar() {
-    if (!Utils.qs('#topbarTitle')) return;
-    Utils.qs('#topbarTitle').textContent = 'Dashboard - Executive Overview';
-    Utils.qs('#topbarCrumbs').textContent = 'Executive operating view across revenue, demand, risk and business health';
-    const actions = Utils.qs('#topbarActions');
-    actions.insertAdjacentHTML('beforeend', `
-      <button class="btn-outline" id="exportBtn"><i class="bi bi-download"></i>Export Summary</button>
-      <span class="pill" id="lastUpdated"><span class="dot"></span>Loading data</span>
-      <button class="btn-outline" id="refreshBtn"><i class="bi bi-arrow-clockwise"></i>Refresh</button>
-    `);
-    Utils.qs('#refreshBtn').addEventListener('click', loadDashboard);
-    Utils.qs('#exportBtn').addEventListener('click', exportSummary);
+    if (Utils.qs('#topbarTitle')) Utils.qs('#topbarTitle').textContent = 'Executive Dashboard — AI Retail War Room';
+    if (Utils.qs('#topbarCrumbs')) Utils.qs('#topbarCrumbs').textContent = 'Executive operating view across revenue, demand, customer intelligence and forecasting';
+    const refreshBtn = Utils.qs('#refreshBtn');
+    const exportBtn = Utils.qs('#exportBtn');
+    if (refreshBtn) refreshBtn.onclick = loadDashboard;
+    if (exportBtn) exportBtn.onclick = exportSummary;
   }
 
-  async function loadDashboard() {
-    setLoadingState(true);
-    try {
-      const [dash, analytics] = await Promise.all([
-        API.getDashboard(dashboardFilters),
-        API.getAnalyticsSummary()
-      ]);
+  async function loadDashboard(forceRefresh = false) {
+    const hasActiveFilters = Object.values(dashboardFilters).some(Boolean);
+    if (!forceRefresh && !hasActiveFilters) {
+      const cached = Utils.getCache('dashboard');
+      if (cached) {
+        const analytics = cached.analytics || {};
+        populateFilterControls(cached.filter_options || {});
+        renderFilterSummary();
+        renderCommandDeck(cached, analytics);
+        renderKpis(cached);
+        Charts.renderRevenueChart('revenueChart', cached.monthly_sales || []);
+        renderTopCategories(cached.top_categories || []);
+        renderPaymentBreakdown(cached.payment_types || []);
+        renderBusinessHealth(analytics.business_health || {});
+        renderDashboardInsights(analytics.insights || []);
+        lastExportPayload = buildExportPayload(cached, analytics);
+        const lu = Utils.qs('#lastUpdated');
+        if (lu) lu.innerHTML = `<span class="dot"></span>Updated (Cached)`;
+        return;
+      }
+    }
 
+    setLoadingState(true);
+    Utils.showLoader(null, 'Filtering Retail Telemetry...');
+
+    try {
+      const dash = await API.getDashboard(dashboardFilters);
+      const analytics = dash.analytics || {};
+
+      if (!hasActiveFilters) {
+        Utils.setCache('dashboard', dash);
+      }
       populateFilterControls(dash.filter_options || {});
       renderFilterSummary();
       renderCommandDeck(dash, analytics);
       renderKpis(dash);
       Charts.renderRevenueChart('revenueChart', dash.monthly_sales || []);
       renderTopCategories(dash.top_categories || []);
-      renderTopStates(dash.state_sales || []);
       renderPaymentBreakdown(dash.payment_types || []);
-      renderDecisionSnapshot(analytics);
       renderBusinessHealth(analytics.business_health || {});
-      renderExecutiveReadout(dash, analytics);
-      renderWatchlist(dash, analytics);
-      renderDecisionLog(analytics);
+      renderDashboardInsights(analytics.insights || []);
       lastExportPayload = buildExportPayload(dash, analytics);
 
       const lu = Utils.qs('#lastUpdated');
@@ -63,6 +78,7 @@
       console.error(err);
       showLoadError(err);
     } finally {
+      Utils.hideLoader();
       setLoadingState(false);
     }
   }
@@ -73,7 +89,7 @@
 
     if (refreshBtn) {
       refreshBtn.disabled = isLoading;
-      refreshBtn.querySelector('i').classList.toggle('spin', isLoading);
+      refreshBtn.querySelector('i')?.classList.toggle('spin', isLoading);
     }
 
     if (exportBtn) exportBtn.disabled = isLoading || !lastExportPayload;
@@ -81,53 +97,62 @@
 
   function showLoadError(err) {
     const banner = Utils.qs('#errorBanner');
-    banner.textContent = `Couldn't load dashboard data - ${err.message}. Confirm the API is running at ${CONFIG.API_BASE_URL}, then retry.`;
-    banner.style.display = 'block';
+    if (banner) {
+      banner.textContent = `Couldn't load dashboard data - ${err.message}. Confirm the API is running at ${CONFIG.API_BASE_URL}, then retry.`;
+      banner.style.display = 'block';
+    }
   }
 
   function setupFilters() {
     const applyBtn = Utils.qs('#applyFiltersBtn');
     const resetBtn = Utils.qs('#resetFiltersBtn');
 
-    applyBtn.addEventListener('click', () => {
-      pendingFilters = readFiltersFromDom();
-      dashboardFilters = { ...pendingFilters };
-      Utils.setGlobalFilters(dashboardFilters);
-      Utils.updateScopeBanner(dashboardFilters);
-      window.dispatchEvent(new CustomEvent('globalFilters:changed'));
-      loadDashboard();
-    });
+    if (applyBtn) {
+      applyBtn.addEventListener('click', () => {
+        pendingFilters = readFiltersFromDom();
+        dashboardFilters = { ...pendingFilters };
+        Utils.setGlobalFilters(dashboardFilters);
+        Utils.updateScopeBanner(dashboardFilters);
+        window.dispatchEvent(new CustomEvent('globalFilters:changed'));
+        loadDashboard(true);
+      });
+    }
 
-    resetBtn.addEventListener('click', () => {
-      dashboardFilters = { year: '', state: '', payment: '' };
-      pendingFilters = { ...dashboardFilters };
-      Utils.clearGlobalFilters();
-      Utils.updateScopeBanner(dashboardFilters);
-      window.dispatchEvent(new CustomEvent('globalFilters:changed'));
-      applyFiltersToDom();
-      loadDashboard();
-    });
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        dashboardFilters = { year: '', state: '', payment: '' };
+        pendingFilters = { ...dashboardFilters };
+        Utils.clearGlobalFilters();
+        Utils.updateScopeBanner(dashboardFilters);
+        window.dispatchEvent(new CustomEvent('globalFilters:changed'));
+        applyFiltersToDom();
+        loadDashboard(true);
+      });
+    }
 
     ['#yearFilter', '#stateFilter', '#paymentFilter'].forEach((selector) => {
-      Utils.qs(selector).addEventListener('change', () => {
-        pendingFilters = readFiltersFromDom();
-        renderFilterSummary({ pending: true });
-      });
+      const el = Utils.qs(selector);
+      if (el) {
+        el.addEventListener('change', () => {
+          pendingFilters = readFiltersFromDom();
+          renderFilterSummary({ pending: true });
+        });
+      }
     });
   }
 
   function readFiltersFromDom() {
     return {
-      year: Utils.qs('#yearFilter').value,
-      state: Utils.qs('#stateFilter').value,
-      payment: Utils.qs('#paymentFilter').value
+      year: Utils.qs('#yearFilter')?.value || '',
+      state: Utils.qs('#stateFilter')?.value || '',
+      payment: Utils.qs('#paymentFilter')?.value || ''
     };
   }
 
   function applyFiltersToDom() {
-    Utils.qs('#yearFilter').value = dashboardFilters.year;
-    Utils.qs('#stateFilter').value = dashboardFilters.state;
-    Utils.qs('#paymentFilter').value = dashboardFilters.payment;
+    if (Utils.qs('#yearFilter')) Utils.qs('#yearFilter').value = dashboardFilters.year || '';
+    if (Utils.qs('#stateFilter')) Utils.qs('#stateFilter').value = dashboardFilters.state || '';
+    if (Utils.qs('#paymentFilter')) Utils.qs('#paymentFilter').value = dashboardFilters.payment || '';
     pendingFilters = { ...dashboardFilters };
     renderFilterSummary();
   }
@@ -135,14 +160,17 @@
   function populateFilterControls(options) {
     fillSelect(Utils.qs('#yearFilter'), options.years || [], {
       emptyLabel: 'All years',
-      value: (row) => row.year,
-      label: (row) => row.year
+      value: (row) => String(row.year),
+      label: (row) => String(row.year)
     });
 
     fillSelect(Utils.qs('#stateFilter'), options.states || [], {
       emptyLabel: 'All states',
       value: (row) => row.customer_state,
-      label: (row) => `${Utils.stateName(row.customer_state)} (${row.customer_state})`
+      label: (row) => {
+        const name = Utils.stateName(row.customer_state);
+        return name === row.customer_state ? name : `${name} (${row.customer_state})`;
+      }
     });
 
     fillSelect(Utils.qs('#paymentFilter'), options.payments || [], {
@@ -155,7 +183,7 @@
   }
 
   function fillSelect(select, rows, { emptyLabel, value, label }) {
-    const current = select.value;
+    if (!select) return;
     select.innerHTML = `<option value="">${emptyLabel}</option>`;
 
     rows.forEach((row) => {
@@ -164,8 +192,6 @@
       option.textContent = label(row);
       select.appendChild(option);
     });
-
-    select.value = current;
   }
 
   function renderFilterSummary({ pending = false } = {}) {
@@ -176,8 +202,10 @@
     if (source.state) parts.push(`${Utils.stateName(source.state)} (${source.state})`);
     if (source.payment) parts.push(Utils.paymentLabel(source.payment));
 
-    const text = parts.length ? parts.join(' · ') : 'All retail data';
-    Utils.qs('#filterSummary').textContent = pending ? `${text} · pending` : text;
+    const text = parts.length ? parts.join(' · ') : 'Entire Connected Fleet';
+
+    const fs = Utils.qs('#filterSummary');
+    if (fs) fs.textContent = pending ? `${text} · pending` : text;
 
     const heroScope = Utils.qs('#heroScope');
     if (heroScope) heroScope.textContent = text;
@@ -196,16 +224,14 @@
       return severity === 'critical' || severity === 'high';
     }).length;
 
-    Utils.qs('#heroRange').textContent = describeRange(dash.monthly_sales || []);
-    Utils.qs('#heroHealthValue').textContent = `Grade ${health.grade || '-'}`;
-    Utils.qs('#heroHealthNote').textContent = `${health.score || 0}/100 business health score`;
-    Utils.qs('#heroForecastValue').textContent = forecast.trend || 'Stable';
-    Utils.qs('#heroForecastNote').textContent = `${Utils.formatPercent(forecast.change_percent || 0)} projected change over the next 30 days`;
-    Utils.qs('#heroRiskValue').textContent = criticalCount ? `${criticalCount} live risks` : 'Controlled';
-    Utils.qs('#heroRiskNote').textContent = criticalCount
-      ? 'Critical or high-severity anomalies need leadership review'
-      : 'No critical spikes flagged by anomaly detection';
-    Utils.qs('#heroNarrative').textContent = buildNarrative(dash, analytics);
+    if (Utils.qs('#heroRange')) Utils.qs('#heroRange').textContent = describeRange(dash.monthly_sales || []);
+    if (Utils.qs('#heroHealthValue')) Utils.qs('#heroHealthValue').textContent = `${health.score || 0}/100`;
+    if (Utils.qs('#heroHealthNote')) Utils.qs('#heroHealthNote').textContent = `Grade ${health.grade || '-'} · ${health.status || 'Stable'}`;
+    if (Utils.qs('#heroForecastValue')) Utils.qs('#heroForecastValue').textContent = forecast.trend || 'Stable';
+    if (Utils.qs('#heroForecastNote')) Utils.qs('#heroForecastNote').textContent = `${Utils.formatPercent(forecast.change_percent || 0)} projected change`;
+    if (Utils.qs('#heroRiskValue')) Utils.qs('#heroRiskValue').textContent = criticalCount ? `${criticalCount} risks` : 'Low Risk';
+    if (Utils.qs('#heroRiskNote')) Utils.qs('#heroRiskNote').textContent = criticalCount ? `${criticalCount} critical anomalies active` : 'Normal operational range';
+    if (Utils.qs('#heroNarrative')) Utils.qs('#heroNarrative').textContent = buildNarrative(dash, analytics);
   }
 
   function buildNarrative(dash, analytics) {
@@ -215,54 +241,69 @@
     const health = analytics.business_health || {};
     const parts = [];
 
-    if (topCategory) parts.push(`${Utils.categoryLabel(topCategory.category)} is the strongest category`);
-    if (topState) parts.push(`${Utils.stateName(topState.customer_state || topState.state)} leads regional revenue`);
-    if (forecast.trend) parts.push(`${forecast.trend.toLowerCase()} demand is projected over the next 30 days`);
-    if (health.status) parts.push(`overall business health is ${String(health.status).toLowerCase()}`);
+    if (topCategory) parts.push(`${Utils.categoryLabel(topCategory.category)} leads segment performance`);
+    if (topState) parts.push(`${Utils.stateName(topState.customer_state || topState.state)} represents top regional vehicle concentration`);
+    if (forecast.trend) parts.push(`${forecast.trend.toLowerCase()} degradation trend projected for next 30 days`);
+    if (health.status) parts.push(`overall fleet battery health index is ${String(health.status).toLowerCase()}`);
 
-    if (!parts.length) return 'Current retail performance is loading.';
+    if (!parts.length) return 'Executive fleet operations and risk telemetry are active.';
     return parts.join(', ').replace(/^./, (c) => c.toUpperCase()) + '.';
   }
 
+
   function describeRange(monthlySales) {
-    if (!monthlySales.length) return 'No revenue history in the current slice';
+    if (!monthlySales.length) return 'No revenue history in slice';
     const first = Utils.formatMonthLabel(monthlySales[0].month);
     const last = Utils.formatMonthLabel(monthlySales[monthlySales.length - 1].month);
     return `${first} to ${last}`;
   }
 
   function renderKpis(dash) {
-    Utils.qs('#errorBanner').style.display = 'none';
+    const banner = Utils.qs('#errorBanner');
+    if (banner) banner.style.display = 'none';
+
     const kpis = dash.kpis || {};
-    Utils.animateValue(Utils.qs('#kpiRevenue'), parseFloat(kpis.revenue || 0), {
-      formatter: (value) => Utils.formatCurrency(value, { compact: true })
-    });
-    Utils.animateValue(Utils.qs('#kpiOrders'), Number(kpis.orders || 0), {
-      formatter: (value) => Utils.formatNumber(value)
-    });
-    Utils.animateValue(Utils.qs('#kpiCustomers'), Number(kpis.customers || 0), {
-      formatter: (value) => `${Utils.formatNumber(value)} customers`
-    });
-    Utils.animateValue(Utils.qs('#kpiCustomersValue'), Number(kpis.customers || 0), {
-      formatter: (value) => Utils.formatNumber(value)
-    });
-    Utils.animateValue(Utils.qs('#kpiAov'), parseFloat(kpis.average_order_value || 0), {
-      formatter: (value) => Utils.formatCurrency(value)
-    });
+    if (Utils.qs('#kpiRevenue')) {
+      Utils.animateValue(Utils.qs('#kpiRevenue'), parseFloat(kpis.revenue || 0), {
+        formatter: (value) => Utils.formatCurrency(value, { compact: true })
+      });
+    }
+    if (Utils.qs('#kpiOrders')) {
+      Utils.animateValue(Utils.qs('#kpiOrders'), Number(kpis.orders || 0), {
+        formatter: (value) => Utils.formatNumber(value)
+      });
+    }
+    if (Utils.qs('#kpiCustomers')) {
+      Utils.animateValue(Utils.qs('#kpiCustomers'), Number(kpis.customers || 0), {
+        formatter: (value) => `${Utils.formatNumber(value)} active units`
+      });
+    }
+    if (Utils.qs('#kpiCustomersValue')) {
+      Utils.animateValue(Utils.qs('#kpiCustomersValue'), Number(kpis.customers || 0), {
+        formatter: (value) => Utils.formatNumber(value)
+      });
+    }
+    if (Utils.qs('#kpiAov')) {
+      Utils.animateValue(Utils.qs('#kpiAov'), parseFloat(kpis.average_order_value || 0), {
+        formatter: (value) => Utils.formatCurrency(value)
+      });
+    }
+
   }
 
   function renderTopCategories(categories) {
     const tbody = Utils.qs('#topCategoriesBody');
+    if (!tbody) return;
     tbody.innerHTML = '';
 
     if (!categories.length) {
-      tbody.innerHTML = '<tr><td colspan="3" style="color:var(--text-muted);padding:18px 20px;">No category data for the selected filters.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="3" style="color:var(--text-muted);padding:18px 20px;">No category data for selected filters.</td></tr>';
       return;
     }
 
     const max = Math.max(...categories.map((row) => parseFloat(row.revenue)));
-    categories.slice(0, 8).forEach((row, index) => {
-      const pct = (parseFloat(row.revenue) / max) * 100;
+    categories.slice(0, 6).forEach((row, index) => {
+      const pct = max > 0 ? (parseFloat(row.revenue) / max) * 100 : 0;
       tbody.appendChild(Utils.el('tr', '', `
         <td><span class="rank">${index + 1}</span>${Utils.categoryLabel(row.category)}</td>
         <td class="num bar-cell">${Utils.formatCurrency(parseFloat(row.revenue), { compact: true })}
@@ -272,266 +313,76 @@
     });
   }
 
-  function renderTopStates(states) {
-    const tbody = Utils.qs('#topStatesBody');
-    tbody.innerHTML = '';
-
-    if (!states.length) {
-      tbody.innerHTML = '<tr><td colspan="3" style="color:var(--text-muted);padding:18px 20px;">No state data for the selected filters.</td></tr>';
-      return;
-    }
-
-    const max = Math.max(...states.map((row) => parseFloat(row.revenue)));
-    states.slice(0, 8).forEach((row, index) => {
-      const stateCode = row.customer_state || row.state;
-      const pct = (parseFloat(row.revenue) / max) * 100;
-      tbody.appendChild(Utils.el('tr', '', `
-        <td><span class="rank">${index + 1}</span>${Utils.stateName(stateCode)} <span style="color:var(--text-muted)">(${stateCode})</span></td>
-        <td class="num bar-cell">${Utils.formatCurrency(parseFloat(row.revenue), { compact: true })}
-          <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div></td>
-        <td class="num">${Utils.formatNumber(row.orders)}</td>
-      `));
-    });
-  }
-
   function renderPaymentBreakdown(paymentBreakdown) {
     if (!paymentBreakdown.length) {
       Charts.clearChart('paymentChart');
-      Utils.qs('#paymentLegend').innerHTML = '<div class="legend-sub">No payment data for the selected filters.</div>';
-      Utils.qs('#paymentTotalOrders').textContent = '';
+      if (Utils.qs('#paymentLegend')) Utils.qs('#paymentLegend').innerHTML = '<div class="legend-sub">No payment data for selected filters.</div>';
       return;
     }
 
     const { colors } = Charts.renderPaymentChart('paymentChart', paymentBreakdown);
     const total = paymentBreakdown.reduce((sum, row) => sum + row.total, 0);
     const list = Utils.qs('#paymentLegend');
+    if (!list) return;
     list.innerHTML = '';
 
     paymentBreakdown.forEach((row, index) => {
-      const pct = ((row.total / total) * 100).toFixed(1);
+      const pct = total > 0 ? ((row.total / total) * 100).toFixed(1) : '0';
       list.appendChild(Utils.el('div', 'legend-row', `
         <span class="legend-dot" style="background:${colors[index]}"></span>
         <span class="legend-name">${Utils.paymentLabel(row.payment_type)}</span>
         <span class="legend-value">${pct}%</span>
       `));
     });
-
-    Utils.qs('#paymentTotalOrders').textContent = `${Utils.formatNumber(total)} orders`;
-  }
-
-  function renderDecisionSnapshot(analytics) {
-    const forecast = analytics.forecast_summary || {};
-    const retention = analytics.customer_retention || {};
-    const delivery = analytics.delivery_performance || {};
-    const anomalies = analytics.anomalies || [];
-    const forecastChange = Number(forecast.change_percent || 0);
-    const criticalCount = anomalies.filter((item) => {
-      const severity = String(item.severity || '').toLowerCase();
-      return severity === 'critical' || severity === 'high';
-    }).length;
-    const opportunityCount = anomalies.filter((item) => String(item.severity || '').toLowerCase() === 'opportunity').length;
-    const avgOrders = Number(retention.avg_orders || 0);
-    const repeatCustomers = Number(retention.repeat_customers || 0);
-    const totalCustomers = Number(retention.total_customers || 0);
-    const repeatRate = totalCustomers ? (repeatCustomers / totalCustomers) * 100 : 0;
-    const deliveryDays = Number(delivery.avg_delivery_days || 0);
-
-    setSnapshotCard('Forecast', {
-      badge: forecastChange >= 5 ? 'Positive' : forecastChange <= -5 ? 'Risk' : 'Watch',
-      tone: forecastChange >= 5 ? 'good' : forecastChange <= -5 ? 'danger' : 'neutral',
-      value: forecast.trend || 'Stable',
-      note: `${Utils.formatPercent(forecastChange)} vs. current run rate`
-    });
-
-    setSnapshotCard('Retention', {
-      badge: repeatRate >= 12 ? 'Healthy' : repeatRate >= 7 ? 'Watch' : 'Low',
-      tone: repeatRate >= 12 ? 'good' : repeatRate >= 7 ? 'neutral' : 'danger',
-      value: `${repeatRate.toFixed(1)}%`,
-      note: `${Utils.formatNumber(repeatCustomers)} repeat customers, ${avgOrders.toFixed(2)} avg orders per customer`
-    });
-
-    setSnapshotCard('Delivery', {
-      badge: deliveryDays <= 10 ? 'On track' : deliveryDays <= 14 ? 'Watch' : 'Slow',
-      tone: deliveryDays <= 10 ? 'good' : deliveryDays <= 14 ? 'neutral' : 'danger',
-      value: deliveryDays ? `${deliveryDays.toFixed(1)} days` : '-',
-      note: 'Average delivery lead time across fulfilled orders'
-    });
-
-    setSnapshotCard('Risk', {
-      badge: criticalCount === 0 ? 'Controlled' : criticalCount <= 2 ? 'Watch' : 'Escalate',
-      tone: criticalCount === 0 ? 'good' : criticalCount <= 2 ? 'neutral' : 'danger',
-      value: criticalCount ? `${criticalCount} open risks` : 'No critical spikes',
-      note: `${opportunityCount} upside signals detected by anomaly engine`
-    });
-  }
-
-  function setSnapshotCard(name, { badge, tone, value, note }) {
-    Utils.qs(`#snapshot${name}Badge`).textContent = badge;
-    Utils.qs(`#snapshot${name}Badge`).className = `snapshot-badge ${tone}`;
-    Utils.qs(`#snapshot${name}Value`).textContent = value;
-    Utils.qs(`#snapshot${name}Note`).textContent = note;
   }
 
   function renderBusinessHealth(health) {
-    Charts.renderHealthRing('healthRingSvg', health.score || 0);
-    Utils.qs('#healthScore').textContent = health.score || 0;
-    Utils.qs('#healthGrade').textContent = `Grade ${health.grade || '-'} · ${health.status || 'Monitoring'}`;
+    if (Utils.qs('#healthRingSvg')) Charts.renderHealthRing('healthRingSvg', health.score || 0);
+    if (Utils.qs('#healthScore')) Utils.qs('#healthScore').textContent = health.score || 0;
+    if (Utils.qs('#healthGrade')) Utils.qs('#healthGrade').textContent = `Grade ${health.grade || '-'} · ${health.status || 'Stable'}`;
 
     const breakdown = Utils.qs('#healthBreakdown');
-    breakdown.innerHTML = '';
-    (health.breakdown || []).forEach((item) => {
-      const pct = item.max ? (item.score / item.max) * 100 : 0;
-      breakdown.appendChild(Utils.el('div', 'health-metric', `
-        <div class="hm-top"><span>${item.metric}</span><span>${item.score}/${item.max}</span></div>
-        <div class="hm-track"><div class="hm-fill" style="width:${pct}%"></div></div>
-      `));
-    });
-
-    Utils.qs('#healthDeliveryDays').textContent = health.average_delivery_days ? `${health.average_delivery_days.toFixed(1)} days` : '-';
-    Utils.qs('#healthRepeatRate').textContent = health.repeat_rate !== undefined ? `${health.repeat_rate.toFixed(2)}%` : '-';
-    Utils.qs('#healthAov').textContent = health.average_order_value ? Utils.formatCurrency(health.average_order_value) : '-';
-  }
-
-  function renderExecutiveReadout(dash, analytics) {
-    const revenueSeries = (dash.monthly_sales || [])
-      .map((item) => Number(item.revenue || 0))
-      .filter((value) => Number.isFinite(value));
-    const forecast = analytics.forecast_summary || {};
-    const anomalies = analytics.anomalies || [];
-    const currentMonth = revenueSeries[revenueSeries.length - 1] || 0;
-    const previousMonth = revenueSeries[revenueSeries.length - 2] || 0;
-    const currentQuarter = revenueSeries.slice(-3).reduce((sum, value) => sum + value, 0);
-    const previousQuarter = revenueSeries.slice(-6, -3).reduce((sum, value) => sum + value, 0);
-    const criticalCount = anomalies.filter((item) => {
-      const severity = String(item.severity || '').toLowerCase();
-      return severity === 'critical' || severity === 'high';
-    }).length;
-    const monthDelta = compareValues(currentMonth, previousMonth);
-    const quarterDelta = compareValues(currentQuarter, previousQuarter);
-    const drivers = buildDriverReadout(dash, analytics);
-
-    Utils.qs('#readoutMomentumValue').textContent = monthDelta.label;
-    Utils.qs('#readoutMomentumNote').textContent = `Current month ${Utils.formatCurrency(currentMonth, { compact: true })} versus ${Utils.formatCurrency(previousMonth, { compact: true })} in the previous month.`;
-
-    Utils.qs('#readoutConcentrationValue').textContent = quarterDelta.label;
-    Utils.qs('#readoutConcentrationNote').textContent = `Current quarter ${Utils.formatCurrency(currentQuarter, { compact: true })} versus ${Utils.formatCurrency(previousQuarter, { compact: true })} in the previous quarter.`;
-
-    Utils.qs('#readoutOutlookValue').textContent = drivers.headline || (forecast.trend || 'Stable');
-    Utils.qs('#readoutOutlookNote').textContent = criticalCount
-      ? `${drivers.detail} ${criticalCount} elevated risk signals remain open.`
-      : drivers.detail;
-  }
-
-  function compareValues(current, previous) {
-    if (!previous) {
-      return {
-        label: Utils.formatCurrency(current, { compact: true }),
-        percent: 0
-      };
+    if (breakdown) {
+      breakdown.innerHTML = '';
+      (health.breakdown || []).forEach((item) => {
+        const pct = item.max ? (item.score / item.max) * 100 : 0;
+        breakdown.appendChild(Utils.el('div', 'health-metric', `
+          <div class="hm-top"><span>${item.metric}</span><span>${item.score}/${item.max}</span></div>
+          <div class="hm-track"><div class="hm-fill" style="width:${pct}%"></div></div>
+        `));
+      });
     }
-    const change = ((current - previous) / previous) * 100;
-    return {
-      label: Utils.formatPercent(change),
-      percent: change
+
+    if (Utils.qs('#healthDeliveryDays')) Utils.qs('#healthDeliveryDays').textContent = health.average_delivery_days ? `${health.average_delivery_days.toFixed(1)}d` : '-';
+    if (Utils.qs('#healthRepeatRate')) Utils.qs('#healthRepeatRate').textContent = health.repeat_rate !== undefined ? `${health.repeat_rate.toFixed(1)}%` : '-';
+    if (Utils.qs('#healthAov')) Utils.qs('#healthAov').textContent = health.average_order_value ? Utils.formatCurrency(health.average_order_value, { compact: true }) : '-';
+  }
+
+  function renderDashboardInsights(insights) {
+    const list = Utils.qs('#dashboardInsightsList');
+    if (!list) return;
+    list.innerHTML = '';
+
+    if (!insights || !insights.length) {
+      list.innerHTML = '<div style="color:var(--text-muted);font-size:12.5px;">No automated insights for current scope.</div>';
+      return;
+    }
+
+    const iconMap = {
+      warning: 'bi-exclamation-triangle-fill',
+      success: 'bi-graph-up-arrow',
+      info: 'bi-info-circle-fill'
     };
-  }
 
-  function buildDriverReadout(dash, analytics) {
-    const aov = Number(dash.kpis?.average_order_value || 0);
-    const delivery = Number(analytics.business_health?.average_delivery_days || 0);
-    const repeatRate = Number(analytics.business_health?.repeat_rate || 0);
-    const forecastChange = Number(analytics.forecast_summary?.change_percent || 0);
-
-    if (forecastChange < -5) {
-      return {
-        headline: 'Demand softening',
-        detail: 'Forward demand is slowing, so order volume is the main short-term pressure on revenue.'
-      };
-    }
-    if (aov < 150) {
-      return {
-        headline: 'Basket size gap',
-        detail: 'Lower average order value is limiting revenue growth even when customer activity is stable.'
-      };
-    }
-    if (delivery > 10) {
-      return {
-        headline: 'Fulfilment drag',
-        detail: 'Longer delivery times can slow retention and reduce forecast confidence.'
-      };
-    }
-    if (repeatRate < 10) {
-      return {
-        headline: 'Retention gap',
-        detail: 'Repeat purchase behaviour remains weak, which reduces the compounding effect of loyal demand.'
-      };
-    }
-    return {
-      headline: 'Balanced growth',
-      detail: 'Revenue, customer spend and operating performance are moving without one dominant negative driver.'
-    };
-  }
-
-  function renderWatchlist(dash, analytics) {
-    const container = Utils.qs('#watchlistItems');
-    const anomalies = analytics.anomalies || [];
-    const topCategory = dash.top_categories?.[0];
-    const topState = dash.state_sales?.[0];
-    const items = [];
-
-    anomalies.slice(0, 2).forEach((anomaly) => {
-      items.push({
-        title: anomaly.anomaly_type,
-        badge: anomaly.severity,
-        tone: anomaly.severity.toLowerCase(),
-        note: anomaly.recommendation
-      });
-    });
-
-    if (topCategory) {
-      items.push({
-        title: `${Utils.categoryLabel(topCategory.category)} demand`,
-        badge: 'Monitor',
-        tone: 'info',
-        note: `Top category contribution is strong; review inventory coverage and promotional support.`
-      });
-    }
-
-    if (topState) {
-      items.push({
-        title: `${Utils.stateName(topState.customer_state || topState.state)} execution`,
-        badge: 'Review',
-        tone: 'medium',
-        note: `Top state by revenue should be checked for fulfilment pace and retention quality.`
-      });
-    }
-
-    container.innerHTML = '';
-    items.slice(0, 4).forEach((item) => {
-      container.appendChild(Utils.el('div', 'watch-item', `
-        <div class="watch-top">
-          <div class="watch-title">${item.title}</div>
-          <span class="badge ${item.tone}">${item.badge}</span>
+    insights.slice(0, 3).forEach((ins) => {
+      const type = ins.type || 'info';
+      const icon = iconMap[type] || 'bi-info-circle-fill';
+      list.appendChild(Utils.el('div', `insight-item ${type}`, `
+        <div class="ii-icon"><i class="bi ${icon}"></i></div>
+        <div>
+          <div class="ii-title">${ins.title}</div>
+          <div class="ii-msg">${ins.message}</div>
         </div>
-        <div class="watch-note">${item.note}</div>
-      `));
-    });
-  }
-
-  function renderDecisionLog(analytics) {
-    const container = Utils.qs('#decisionLogItems');
-    const recs = analytics.recommendations || [];
-    const statuses = ['Open', 'In Review', 'Planned'];
-
-    container.innerHTML = '';
-    recs.slice(0, 3).forEach((rec, index) => {
-      container.appendChild(Utils.el('div', 'decision-item', `
-        <div class="decision-top">
-          <div class="decision-title">${rec.title}</div>
-          <span class="badge ${rec.priority.toLowerCase()}">${statuses[index] || 'Open'}</span>
-        </div>
-        <div class="decision-note">${rec.action}</div>
-        <div class="decision-meta">Priority: ${rec.priority} · Owner: War Room Team</div>
       `));
     });
   }
@@ -539,8 +390,6 @@
   function buildExportPayload(dash, analytics) {
     const health = analytics.business_health || {};
     const forecast = analytics.forecast_summary || {};
-    const retention = analytics.customer_retention || {};
-    const anomalies = analytics.anomalies || [];
 
     return {
       exported_at: new Date().toISOString(),
@@ -557,22 +406,12 @@
       forecast_summary: {
         trend: forecast.trend,
         change_percent: forecast.change_percent,
-        average_forecast: forecast.average_forecast,
-        confidence_width: forecast.confidence_width
+        average_forecast: forecast.average_forecast
       },
-      customer_retention: retention,
-      anomaly_summary: {
-        total: anomalies.length,
-        critical_or_high: anomalies.filter((item) => {
-          const severity = String(item.severity || '').toLowerCase();
-          return severity === 'critical' || severity === 'high';
-        }).length,
-        opportunities: anomalies.filter((item) => String(item.severity || '').toLowerCase() === 'opportunity').length
-      },
-      top_categories: (dash.top_categories || []).slice(0, 5),
-      top_states: (dash.state_sales || []).slice(0, 5)
+      top_categories: (dash.top_categories || []).slice(0, 5)
     };
   }
+
 
   function exportSummary() {
     if (!lastExportPayload) return;
@@ -591,6 +430,13 @@
     Utils.updateScopeBanner(dashboardFilters);
     setTopbar();
     setupFilters();
+    window.addEventListener('globalFilters:changed', () => {
+      dashboardFilters = Utils.getGlobalFilters();
+      pendingFilters = { ...dashboardFilters };
+      applyFiltersToDom();
+      loadDashboard();
+    });
     loadDashboard();
   });
+
 })();

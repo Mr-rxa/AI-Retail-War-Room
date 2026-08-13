@@ -1,41 +1,39 @@
 /**
  * charts.js — every Chart.js instance is built here.
  * Exposes render functions that take raw API data and a canvas id.
+ * Styled for Warm Natural Beige Palette with Terracotta & Sage Gradients.
  */
 
 const Charts = (() => {
 
   Chart.defaults.font.family = "'Inter', sans-serif";
-  Chart.defaults.color = '#8EA0BB';
+  Chart.defaults.color = '#5C5248';
   Chart.defaults.font.size = 11.5;
   if (typeof ChartDataLabels !== 'undefined') {
     Chart.register(ChartDataLabels);
   }
 
-  const ACCENT = '#2DD4BF';
-  const ACCENT_SOFT = 'rgba(45,212,191,0.18)';
-  const ACCENT_2 = '#3B82F6';
-  const SUCCESS = '#34D399';
-  const DANGER = '#F87171';
-  const GRID = 'rgba(148,163,184,0.14)';
-  const LABEL_BG = 'rgba(10,21,38,0.94)';
-  const LABEL_BORDER = 'rgba(148,163,184,0.18)';
+  const ACCENT = '#B85C38';           /* Primary Terracotta */
+  const ACCENT_2 = '#5A7D5F';         /* Sage Green */
+  const ACCENT_AMBER = '#C4872A';     /* Warm Amber */
+  const ACCENT_MAUVE = '#7B6B8D';     /* Dusty Mauve */
+  const SUCCESS = '#5A7D5F';
+  const DANGER = '#B85C38';
+  const GRID = 'rgba(140, 120, 96, 0.12)';
+  const LABEL_BG = '#FAF7F2';
+  const LABEL_BORDER = 'rgba(140, 120, 96, 0.25)';
 
   const registry = {};
 
   function destroy(id) {
     const registeredChart = registry[id];
-
     if (registeredChart) {
       registeredChart.destroy();
       delete registry[id];
     }
-
     if (typeof Chart.getChart !== 'function') return;
-
     const canvas = document.getElementById(id);
     const existingChart = canvas ? Chart.getChart(canvas) : Chart.getChart(id);
-
     if (existingChart && existingChart !== registeredChart) {
       existingChart.destroy();
     }
@@ -64,7 +62,7 @@ const Charts = (() => {
       borderColor: LABEL_BORDER,
       borderRadius: 5,
       borderWidth: 1,
-      color: '#D8E5F5',
+      color: '#1C1814',
       font: { size: 10, weight: '700' },
       padding: { top: 3, right: 5, bottom: 3, left: 5 }
     };
@@ -86,7 +84,6 @@ const Charts = (() => {
     const raw = value !== undefined
       ? value
       : context.dataset.data[context.dataIndex];
-
     return toNumber(raw);
   }
 
@@ -142,9 +139,9 @@ const Charts = (() => {
         const pct = total ? (Number(value) / total) * 100 : 0;
         return `${pct.toFixed(0)}%`;
       },
-      color: '#fff',
+      color: '#FAF7F2',
       font: { size: 10.5, weight: '800' },
-      textStrokeColor: 'rgba(15,20,32,0.28)',
+      textStrokeColor: 'rgba(28,24,20,0.3)',
       textStrokeWidth: 2,
       anchor: 'center',
       align: 'center',
@@ -158,16 +155,16 @@ const Charts = (() => {
     const ctx = document.getElementById(canvasId).getContext('2d');
     const labels = monthlySales.map(m => Utils.formatMonthLabel(m.month));
     const values = monthlySales.map(m => parseFloat(m.revenue));
-    const gradient = ctx.createLinearGradient(0, 0, 0, 280);
-    gradient.addColorStop(0, 'rgba(45,212,191,0.28)');
-    gradient.addColorStop(1, 'rgba(45,212,191,0.0)');
+    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(184, 92, 56, 0.35)');
+    gradient.addColorStop(1, 'rgba(184, 92, 56, 0.0)');
 
     registry[canvasId] = new Chart(ctx, {
       type: 'line',
       data: { labels, datasets: [{
         label: 'Revenue', data: values, borderColor: ACCENT, backgroundColor: gradient, fill: true,
-        tension: 0.35, pointRadius: 0, pointHoverRadius: 5, pointHoverBackgroundColor: ACCENT,
-        pointHoverBorderColor: '#fff', pointHoverBorderWidth: 2, borderWidth: 2.25
+        tension: 0.35, pointRadius: 0, pointHoverRadius: 6, pointHoverBackgroundColor: ACCENT,
+        pointHoverBorderColor: '#FAF7F2', pointHoverBorderWidth: 2.5, borderWidth: 2.5
       }]},
       options: {
         layout: { padding: { top: 22, right: 18, bottom: 0, left: 8 } },
@@ -176,8 +173,9 @@ const Charts = (() => {
           legend: { display: false },
           datalabels: lineDataLabels(value => Utils.formatCurrency(value, { compact: true })),
           tooltip: {
-            backgroundColor: '#08111F', titleFont: { weight: '600', size: 11.5 }, bodyFont: { size: 12 },
-            padding: 10, cornerRadius: 8, displayColors: false,
+            backgroundColor: 'rgba(250, 247, 242, 0.96)', titleColor: '#1C1814', bodyColor: '#5C5248',
+            titleFont: { weight: '700', size: 12 }, bodyFont: { size: 12 },
+            padding: 10, cornerRadius: 8, displayColors: false, borderColor: 'rgba(140, 120, 96, 0.25)', borderWidth: 1,
             callbacks: { label: (c) => Utils.formatCurrency(c.parsed.y) }
           }
         },
@@ -208,10 +206,10 @@ const Charts = (() => {
       data: {
         labels,
         datasets: [
-          { label: 'Upper bound', data: upperSeries, borderColor: 'transparent', backgroundColor: 'rgba(59,130,246,0.12)', pointRadius: 0, fill: '+1', tension: 0.3 },
+          { label: 'Upper bound', data: upperSeries, borderColor: 'transparent', backgroundColor: 'rgba(90,125,95,0.12)', pointRadius: 0, fill: '+1', tension: 0.3 },
           { label: 'Lower bound', data: lowerSeries, borderColor: 'transparent', backgroundColor: 'transparent', pointRadius: 0, fill: false, tension: 0.3 },
           { label: 'Forecast', data: forecastSeries, borderColor: ACCENT_2, borderDash: [5, 4], pointRadius: 0, tension: 0.3, borderWidth: 2 },
-          { label: 'Historical', data: historicalSeries, borderColor: ACCENT, pointRadius: 0, tension: 0.3, borderWidth: 2.25 }
+          { label: 'Historical', data: historicalSeries, borderColor: ACCENT, pointRadius: 0, tension: 0.3, borderWidth: 2.5 }
         ]
       },
       options: {
@@ -228,7 +226,8 @@ const Charts = (() => {
             }
           },
           tooltip: {
-            backgroundColor: '#08111F', padding: 10, cornerRadius: 8,
+            backgroundColor: 'rgba(250, 247, 242, 0.96)', titleColor: '#1C1814', bodyColor: '#5C5248',
+            padding: 10, cornerRadius: 8, borderColor: 'rgba(140, 120, 96, 0.25)', borderWidth: 1,
             filter: (item) => item.dataset.label === 'Historical' || item.dataset.label === 'Forecast',
             callbacks: { label: (c) => `${c.dataset.label}: ${Utils.formatCurrency(c.parsed.y)}` }
           }
@@ -241,20 +240,20 @@ const Charts = (() => {
   function renderPaymentChart(canvasId, paymentBreakdown) {
     destroy(canvasId);
     const ctx = document.getElementById(canvasId).getContext('2d');
-    const colors = [ACCENT, ACCENT_2, SUCCESS, '#B7791F', '#9AA1B1'];
+    const colors = [ACCENT, ACCENT_2, ACCENT_AMBER, ACCENT_MAUVE, '#9C8E82'];
     const labels = paymentBreakdown.map(p => Utils.paymentLabel(p.payment_type));
     const values = paymentBreakdown.map(p => p.total);
 
     registry[canvasId] = new Chart(ctx, {
       type: 'doughnut',
-      data: { labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 2, borderColor: '#0E1B2E', hoverOffset: 4 }] },
+      data: { labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 2, borderColor: '#FAF7F2', hoverOffset: 5 }] },
       options: {
-        responsive: true, maintainAspectRatio: false, cutout: '72%',
+        responsive: true, maintainAspectRatio: false, cutout: '70%',
         plugins: {
           legend: { display: false },
           datalabels: donutDataLabels(),
           tooltip: {
-            backgroundColor: '#08111F', padding: 10, cornerRadius: 8,
+            backgroundColor: 'rgba(250, 247, 242, 0.96)', titleColor: '#1C1814', bodyColor: '#5C5248', padding: 10, cornerRadius: 8,
             callbacks: { label: (c) => `${c.label}: ${Utils.formatNumber(c.parsed)} orders` }
           }
         }
@@ -272,14 +271,14 @@ const Charts = (() => {
 
     registry[canvasId] = new Chart(ctx, {
       type: 'bar',
-      data: { labels, datasets: [{ data: values, backgroundColor: values.map(v => v === max ? ACCENT : ACCENT_SOFT), borderRadius: 4, maxBarThickness: 14 }] },
+      data: { labels, datasets: [{ data: values, backgroundColor: values.map(v => v === max ? ACCENT : 'rgba(184,92,56,0.18)'), borderRadius: 4, maxBarThickness: 14 }] },
       options: {
         layout: { padding: { top: 20, right: 8, bottom: 0, left: 8 } },
         responsive: true, maintainAspectRatio: false,
         plugins: {
           legend: { display: false },
           datalabels: barDataLabels(value => Utils.formatNumber(value, { compact: true })),
-          tooltip: { backgroundColor: '#08111F', padding: 10, cornerRadius: 8, callbacks: { label: (c) => `${Utils.formatNumber(c.parsed.y)} orders` } }
+          tooltip: { backgroundColor: 'rgba(250, 247, 242, 0.96)', titleColor: '#1C1814', bodyColor: '#5C5248', padding: 10, cornerRadius: 8, callbacks: { label: (c) => `${Utils.formatNumber(c.parsed.y)} orders` } }
         },
         scales: {
           x: { grid: { display: false }, ticks: { maxTicksLimit: 12 }, border: { display: false } },
@@ -299,14 +298,14 @@ const Charts = (() => {
 
     registry[canvasId] = new Chart(ctx, {
       type: 'bar',
-      data: { labels, datasets: [{ data: values, backgroundColor: ACCENT_SOFT, hoverBackgroundColor: ACCENT, borderRadius: 6, maxBarThickness: 34 }] },
+      data: { labels, datasets: [{ data: values, backgroundColor: 'rgba(184,92,56,0.18)', hoverBackgroundColor: ACCENT, borderRadius: 6, maxBarThickness: 34 }] },
       options: {
         layout: { padding: { top: 20, right: 8, bottom: 0, left: 8 } },
         responsive: true, maintainAspectRatio: false,
         plugins: {
           legend: { display: false },
           datalabels: barDataLabels(value => Utils.formatCurrency(value, { compact: true })),
-          tooltip: { backgroundColor: '#08111F', padding: 10, cornerRadius: 8, callbacks: { label: (c) => Utils.formatCurrency(c.parsed.y, { compact: true }) } }
+          tooltip: { backgroundColor: 'rgba(250, 247, 242, 0.96)', titleColor: '#1C1814', bodyColor: '#5C5248', padding: 10, cornerRadius: 8, callbacks: { label: (c) => Utils.formatCurrency(c.parsed.y, { compact: true }) } }
         },
         scales: baseGridOptions()
       }
@@ -329,7 +328,7 @@ const Charts = (() => {
         plugins: {
           legend: { display: false },
           datalabels: barDataLabels(value => Utils.formatPercent(value, { decimals: 0 })),
-          tooltip: { backgroundColor: '#08111F', padding: 10, cornerRadius: 8, callbacks: { label: (c) => Utils.formatPercent(c.parsed.y) } }
+          tooltip: { backgroundColor: 'rgba(250, 247, 242, 0.96)', titleColor: '#1C1814', bodyColor: '#5C5248', padding: 10, cornerRadius: 8, callbacks: { label: (c) => Utils.formatPercent(c.parsed.y) } }
         },
         scales: {
           x: { grid: { display: false }, ticks: { maxRotation: 0, maxTicksLimit: 10 }, border: { display: false } },
@@ -341,17 +340,19 @@ const Charts = (() => {
 
   function renderHealthRing(svgId, score) {
     const svg = document.getElementById(svgId);
+    if (!svg) return;
     const radius = 50;
     const circumference = 2 * Math.PI * radius;
     const pct = Math.max(0, Math.min(100, score)) / 100;
     const offset = circumference * (1 - pct);
-    const color = score >= 75 ? SUCCESS : score >= 50 ? '#B7791F' : DANGER;
+    const color = score >= 75 ? SUCCESS : score >= 50 ? ACCENT_AMBER : DANGER;
     const ring = svg.querySelector('.ring-progress');
+    if (!ring) return;
     ring.style.stroke = color;
     ring.style.strokeDasharray = `${circumference} ${circumference}`;
     ring.style.strokeDashoffset = circumference;
     requestAnimationFrame(() => {
-      ring.style.transition = 'stroke-dashoffset 1s cubic-bezier(.4,0,.2,1)';
+      ring.style.transition = 'stroke-dashoffset 1.2s var(--ease-out-expo)';
       ring.style.strokeDashoffset = offset;
     });
   }
@@ -372,7 +373,7 @@ const Charts = (() => {
             label: 'Repeat',
             data: repeatValues,
             borderColor: SUCCESS,
-            backgroundColor: 'rgba(52,211,153,0.14)',
+            backgroundColor: 'rgba(90,125,95,0.14)',
             fill: false,
             pointRadius: 0,
             tension: 0.32,
@@ -381,8 +382,8 @@ const Charts = (() => {
           {
             label: 'New',
             data: newValues,
-            borderColor: ACCENT_2,
-            backgroundColor: 'rgba(59,130,246,0.14)',
+            borderColor: ACCENT,
+            backgroundColor: 'rgba(184,92,56,0.14)',
             fill: false,
             pointRadius: 0,
             tension: 0.32,
@@ -403,7 +404,7 @@ const Charts = (() => {
             }
           },
           tooltip: {
-            backgroundColor: '#08111F', padding: 10, cornerRadius: 8,
+            backgroundColor: 'rgba(250, 247, 242, 0.96)', titleColor: '#1C1814', bodyColor: '#5C5248', padding: 10, cornerRadius: 8,
             callbacks: { label: (c) => `${c.dataset.label}: ${Utils.formatNumber(c.parsed.y)}` }
           }
         },
@@ -417,7 +418,7 @@ const Charts = (() => {
     const ctx = document.getElementById(canvasId).getContext('2d');
     const labels = segments.map((row) => row.segment);
     const values = segments.map((row) => Number(row.customers || 0));
-    const colors = ['#34D399', '#60A5FA', '#F59E0B', '#F87171'];
+    const colors = [SUCCESS, ACCENT, ACCENT_AMBER, ACCENT_MAUVE];
 
     registry[canvasId] = new Chart(ctx, {
       type: 'doughnut',
@@ -427,8 +428,8 @@ const Charts = (() => {
           data: values,
           backgroundColor: colors.slice(0, values.length),
           borderWidth: 2,
-          borderColor: '#0E1B2E',
-          hoverOffset: 4
+          borderColor: '#FAF7F2',
+          hoverOffset: 5
         }]
       },
       options: {
@@ -437,7 +438,7 @@ const Charts = (() => {
           legend: { display: false },
           datalabels: donutDataLabels(),
           tooltip: {
-            backgroundColor: '#08111F', padding: 10, cornerRadius: 8,
+            backgroundColor: 'rgba(250, 247, 242, 0.96)', titleColor: '#1C1814', bodyColor: '#5C5248', padding: 10, cornerRadius: 8,
             callbacks: { label: (c) => `${c.label}: ${Utils.formatNumber(c.parsed)} customers` }
           }
         }
@@ -458,7 +459,7 @@ const Charts = (() => {
         labels,
         datasets: [{
           data: values,
-          backgroundColor: values.map((value) => value >= 25 ? DANGER : '#F59E0B'),
+          backgroundColor: values.map((value) => value >= 25 ? DANGER : ACCENT_AMBER),
           borderRadius: 6,
           maxBarThickness: 28
         }]
@@ -470,7 +471,7 @@ const Charts = (() => {
           legend: { display: false },
           datalabels: barDataLabels((value) => Utils.formatPercent(value, { decimals: 0 })),
           tooltip: {
-            backgroundColor: '#08111F', padding: 10, cornerRadius: 8,
+            backgroundColor: 'rgba(250, 247, 242, 0.96)', titleColor: '#1C1814', bodyColor: '#5C5248', padding: 10, cornerRadius: 8,
             callbacks: { label: (c) => `${Utils.formatPercent(c.parsed.y)} risk rate` }
           }
         },
