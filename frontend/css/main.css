@@ -185,7 +185,7 @@ img { max-width: 100%; display: block; }
   position: sticky;
   top: 0;
   z-index: 30;
-  background: rgba(245, 239, 228, 0.88);
+  background: var(--surface-glass);
   backdrop-filter: blur(20px) saturate(140%);
   -webkit-backdrop-filter: blur(20px) saturate(140%);
   border-bottom: 1px solid var(--border);
@@ -195,7 +195,7 @@ img { max-width: 100%; display: block; }
   justify-content: space-between;
   gap: 16px;
   min-height: var(--topbar-h);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+  box-shadow: 0 1px 0 var(--border-glass);
 }
 
 .topbar-title h1 {
@@ -215,31 +215,31 @@ img { max-width: 100%; display: block; }
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(140, 120, 96, 0.08);
-  border: 1px solid rgba(140, 120, 96, 0.20);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 6px 12px;
   font-size: 12px;
-  color: var(--text-muted);
+  font-weight: 500;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s var(--ease-spring);
 }
 
 .topbar-cmd-hint:hover {
-  background: rgba(140, 120, 96, 0.14);
+  background: var(--sidebar-bg-hover);
   color: var(--text-primary);
   border-color: var(--accent);
 }
 
 .topbar-cmd-hint kbd {
-  background: rgba(255, 255, 255, 0.75);
-  border: 1px solid rgba(140, 120, 96, 0.25);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 4px;
   padding: 1px 5px;
   font-family: var(--font-mono);
   font-size: 11px;
-  box-shadow: inset 0 -1px 0 rgba(140, 120, 96, 0.2);
-  color: var(--text-secondary);
+  color: var(--text-primary);
 }
 
 /* ===== Section headers ===== */

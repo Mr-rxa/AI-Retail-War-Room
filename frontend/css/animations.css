@@ -108,7 +108,7 @@
 
 /* Skeleton warm shimmer */
 .skel {
-  background: linear-gradient(90deg, #EDE6D8 0%, #F0E9DC 25%, #EDE6D8 50%, #F0E9DC 75%, #EDE6D8 100%);
+  background: linear-gradient(90deg, var(--surface-2) 0%, var(--surface) 25%, var(--surface-2) 50%, var(--surface) 75%, var(--surface-2) 100%);
   background-size: 400% 100%;
   animation: shimmerWarm 1.8s ease-in-out infinite;
   border-radius: 6px;
@@ -127,11 +127,14 @@
   height: 12px;
   border-radius: 50%;
   background: var(--accent);
-  mix-blend-mode: multiply;
-  opacity: 0.75;
+  opacity: 0.85;
   transition: transform 0.15s var(--ease-spring), width 0.2s, height 0.2s, background 0.2s, border 0.2s;
   will-change: transform;
   transform: translate(-50%, -50%);
+}
+
+[data-theme="dark"] .custom-cursor {
+  box-shadow: 0 0 12px var(--accent);
 }
 
 .custom-cursor.hovering {

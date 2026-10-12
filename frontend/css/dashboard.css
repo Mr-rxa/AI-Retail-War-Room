@@ -20,12 +20,12 @@
   z-index: 0;
 }
 
-/* Slicer panel — warm stone filter bar */
+/* Slicer panel — adaptive glass filter bar */
 .slicer-panel {
-  background: rgba(255, 255, 255, 0.60);
+  background: var(--surface-glass);
   backdrop-filter: blur(16px) saturate(140%);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
-  border: 1px solid rgba(140, 120, 96, 0.20);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 18px 24px;
   margin-bottom: 24px;
@@ -40,8 +40,8 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(184, 92, 56, 0.4), transparent);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
 }
 
 .slicer-head {
@@ -92,18 +92,26 @@
 }
 
 .slicer-field select {
-  background: var(--surface);
+  background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 8px 12px;
   font-size: 13px;
+  font-weight: 500;
   color: var(--text-primary);
   outline: none;
-  transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.slicer-field select option {
+  background-color: var(--surface);
+  color: var(--text-primary);
 }
 
 .slicer-field select:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
 }
 
 /* Module navigation cards */

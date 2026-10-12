@@ -4,13 +4,18 @@
 
 const CommandPalette = (() => {
   const ROUTES = [
-    { icon: 'bi-grid-1x2-fill', label: 'Executive Dashboard', path: '/dashboard', keys: ['dashboard', 'overview', 'kpi'] },
-    { icon: 'bi-speedometer2', label: 'Fleet Analytics', path: '/customer', keys: ['customer', 'fleet', 'rfm', 'cohort'] },
-    { icon: 'bi-diagram-3-fill', label: 'Causal Analysis', path: '/insights', keys: ['insights', 'causal', 'analysis'] },
-    { icon: 'bi-sliders', label: 'AI Advisor & Simulation', path: '/advisor', keys: ['advisor', 'ai', 'gemini', 'simulation'] },
-    { icon: 'bi-shield-exclamation', label: 'Warranty Intelligence', path: '/anomaly', keys: ['anomaly', 'risk', 'outlier', 'alert'] },
-    { icon: 'bi-graph-up-arrow', label: 'Sales & Financial Forecast', path: '/forecast', keys: ['forecast', 'sales', 'prophet'] },
-    { icon: 'bi-cloud-upload-fill', label: 'Data Import (CSV)', path: '/upload', keys: ['upload', 'csv', 'import', 'data'] },
+    { icon: 'bi-grid-1x2-fill', label: 'Executive Dashboard (3D Bento)', path: '/dashboard', keys: ['dashboard', 'overview', 'kpi', 'bento', 'globe', '3d'] },
+    { icon: 'bi-chat-square-dots-fill', label: 'Ask Data AI (Talk to Your Data)', path: '/chat', keys: ['chat', 'nlp', 'ask', 'ai', 'copilot', 'rag', 'query'] },
+    { icon: 'bi-sliders2', label: 'What-If Modeler (Simulation Lab)', path: '/scenario', keys: ['scenario', 'whatif', 'simulate', 'price', 'elasticity', 'margin'] },
+    { icon: 'bi-speedometer2', label: 'Customer Intelligence (RFM)', path: '/customer', keys: ['customer', 'rfm', 'cohort', 'dna', 'buyers'] },
+    { icon: 'bi-diagram-3-fill', label: 'Causal Driver Analysis', path: '/insights', keys: ['insights', 'causal', 'analysis', 'drivers'] },
+    { icon: 'bi-cpu-fill', label: 'AI Strategic Advisor Lab', path: '/advisor', keys: ['advisor', 'ai', 'gemini', 'strategy'] },
+    { icon: 'bi-shield-exclamation', label: 'IsolationForest Anomaly Scanner', path: '/anomaly', keys: ['anomaly', 'risk', 'outlier', 'alert', 'fraud'] },
+    { icon: 'bi-graph-up-arrow', label: 'Sales & Financial Forecast (Prophet)', path: '/forecast', keys: ['forecast', 'sales', 'prophet', 'predict'] },
+    { icon: 'bi-cloud-upload-fill', label: 'Data Import (100MB CSV)', path: '/upload', keys: ['upload', 'csv', 'import', 'data'] },
+    { icon: 'bi-moon-stars-fill', label: 'Toggle Dark / Light Theme (⌘T)', action: () => ThemeManager.toggle(), keys: ['dark', 'light', 'theme', 'mode'] },
+    { icon: 'bi-easel-fill', label: 'Launch Presentation Mode (P)', action: () => PresentationMode.enterPresentation(), keys: ['present', 'demo', 'pitch', 'slide', 'presentation'] },
+    { icon: 'bi-file-earmark-pdf-fill', label: 'Export Executive Dossier PDF', action: () => ReportExporter.exportExecutivePdf(), keys: ['pdf', 'export', 'download', 'report'] }
   ];
 
   let overlay = null;
@@ -126,8 +131,13 @@ const CommandPalette = (() => {
   }
 
   function executeSelected() {
-    if (filteredRoutes[selectedIndex]) {
-      window.location.href = filteredRoutes[selectedIndex].path;
+    const item = filteredRoutes[selectedIndex];
+    if (!item) return;
+    if (typeof item.action === 'function') {
+      close();
+      item.action();
+    } else if (item.path) {
+      window.location.href = item.path;
     }
   }
 

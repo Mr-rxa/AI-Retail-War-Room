@@ -42,6 +42,10 @@
         renderPaymentBreakdown(cached.payment_types || []);
         renderBusinessHealth(analytics.business_health || {});
         renderDashboardInsights(analytics.insights || []);
+        if (typeof RetailGlobe !== 'undefined') {
+          RetailGlobe.initGlobe('globeContainer', cached.state_sales || []);
+        }
+        startLiveStreamTicker();
         lastExportPayload = buildExportPayload(cached, analytics);
         const lu = Utils.qs('#lastUpdated');
         if (lu) lu.innerHTML = `<span class="dot"></span>Updated (Cached)`;
@@ -68,6 +72,10 @@
       renderPaymentBreakdown(dash.payment_types || []);
       renderBusinessHealth(analytics.business_health || {});
       renderDashboardInsights(analytics.insights || []);
+      if (typeof RetailGlobe !== 'undefined') {
+        RetailGlobe.initGlobe('globeContainer', dash.state_sales || []);
+      }
+      startLiveStreamTicker();
       lastExportPayload = buildExportPayload(dash, analytics);
 
       const lu = Utils.qs('#lastUpdated');
@@ -81,6 +89,32 @@
       Utils.hideLoader();
       setLoadingState(false);
     }
+  }
+
+  let tickerInterval = null;
+  function startLiveStreamTicker() {
+    if (tickerInterval) clearInterval(tickerInterval);
+    const tickerEl = document.getElementById('liveTickerText');
+    if (!tickerEl) return;
+
+    const streamEvents = [
+      "Order #94820 settled • São Paulo (SP) • $218.40 • Credit Card (Watches & Gifts)",
+      "Cart checkout #94821 • Rio de Janeiro (RJ) • $142.00 • Boleto (Health & Beauty)",
+      "High-value VIP order #94822 • Minas Gerais (MG) • $890.00 • Credit Card (Computers)",
+      "Order #94823 delivered • Rio Grande do Sul (RS) • $78.50 • Voucher (Sports & Leisure)",
+      "New customer conversion #94824 • Paraná (PR) • $165.20 • Credit Card (Bed & Bath)",
+      "Order #94825 verified • Bahia (BA) • $310.00 • Credit Card (Furniture & Decor)"
+    ];
+
+    let idx = 0;
+    tickerInterval = setInterval(() => {
+      idx = (idx + 1) % streamEvents.length;
+      tickerEl.style.opacity = '0';
+      setTimeout(() => {
+        tickerEl.textContent = `Ingesting order stream: ${streamEvents[idx]}`;
+        tickerEl.style.opacity = '1';
+      }, 150);
+    }, 3200);
   }
 
   function setLoadingState(isLoading) {

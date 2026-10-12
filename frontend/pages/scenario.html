@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What-If Modeler — AI Retail War Room</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link rel="stylesheet" href="../css/main.css">
+<link rel="stylesheet" href="../css/components.css">
+<link rel="stylesheet" href="../css/effects.css">
+<link rel="stylesheet" href="../css/scenario.css">
+
+<!-- GSAP + Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body data-page="scenario">
+
+<div class="blob-wrap">
+  <div class="blob blob-terracotta"></div>
+  <div class="blob blob-sage"></div>
+  <div class="blob blob-amber"></div>
+</div>
+
+<div class="app-shell">
+  <div id="sidebarMount"></div>
+
+  <div class="main-col">
+    <div id="navbarMount"></div>
+
+    <main class="content">
+      <div id="errorBanner" class="error-banner"></div>
+
+      <div class="scenario-grid reveal-up">
+        <!-- Control Sliders Panel -->
+        <div class="controls-panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h3 style="font-size:16px;font-weight:700;margin:0;display:flex;align-items:center;gap:8px;">
+              <i class="bi bi-sliders2" style="color:var(--accent);"></i>
+              Scenario Levers
+            </h3>
+            <button class="btn-outline" id="resetSlidersBtn" style="padding:4px 10px;font-size:11.5px;"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+          </div>
+          <p style="font-size:12px;color:var(--text-muted);margin:0;">Adjust commercial levers to simulate price elasticity, marketing lift, and retention deflection in real time.</p>
+
+          <!-- Slider 1: Price Change -->
+          <div class="slider-group">
+            <div class="slider-label-row">
+              <span>Catalog Price Shift</span>
+              <span class="slider-val-badge" id="priceBadge">+0.0%</span>
+            </div>
+            <input type="range" class="custom-range" id="priceRange" min="-30" max="30" step="1" value="0">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);">
+              <span>-30% Discount</span>
+              <span>+30% Premium</span>
+            </div>
+          </div>
+
+          <!-- Slider 2: Marketing Spend Boost -->
+          <div class="slider-group">
+            <div class="slider-label-row">
+              <span>Marketing Ad Spend</span>
+              <span class="slider-val-badge" id="marketingBadge">+0%</span>
+            </div>
+            <input type="range" class="custom-range" id="marketingRange" min="0" max="100" step="5" value="0">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);">
+              <span>Baseline</span>
+              <span>+100% Blitz</span>
+            </div>
+          </div>
+
+          <!-- Slider 3: Churn Deflection (Retention) -->
+          <div class="slider-group">
+            <div class="slider-label-row">
+              <span>Customer Retention Program</span>
+              <span class="slider-val-badge" id="churnBadge">+0%</span>
+            </div>
+            <input type="range" class="custom-range" id="churnRange" min="0" max="50" step="2" value="0">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);">
+              <span>No Action</span>
+              <span>50% Churn Deflection</span>
+            </div>
+          </div>
+
+          <!-- Slider 4: Flagship Store Expansion -->
+          <div class="slider-group">
+            <div class="slider-label-row">
+              <span>New Regional Hubs</span>
+              <span class="slider-val-badge" id="storesBadge">0 Hubs</span>
+            </div>
+            <input type="range" class="custom-range" id="storesRange" min="0" max="20" step="1" value="0">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);">
+              <span>0 (Current)</span>
+              <span>+20 Hubs</span>
+            </div>
+          </div>
+
+          <!-- AI Strategic Risk Evaluation -->
+          <div class="risk-meter-wrap">
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;">
+              <span>AI Execution Risk Score</span>
+              <span id="riskScoreVal" style="color:var(--accent);font-family:var(--font-mono);">75 / 100</span>
+            </div>
+            <div style="font-size:11px;color:var(--text-secondary);margin-top:4px;" id="riskScoreLabel">Optimal Commercial Strategy</div>
+          </div>
+        </div>
+
+        <!-- Simulated Results & Trajectory Charts -->
+        <div>
+          <!-- 4 Simulated KPI Cards -->
+          <div class="scenario-stats-grid">
+            <div class="scenario-stat-card">
+              <div class="scenario-stat-label">Projected Gross Revenue</div>
+              <div class="scenario-stat-val" id="simRev">$0</div>
+              <div class="scenario-stat-delta positive" id="simRevDelta"><i class="bi bi-graph-up-arrow"></i> +0.0%</div>
+            </div>
+            <div class="scenario-stat-card">
+              <div class="scenario-stat-label">Projected Orders</div>
+              <div class="scenario-stat-val" id="simOrders">0</div>
+              <div class="scenario-stat-delta positive" id="simOrdersDelta"><i class="bi bi-bag-check"></i> +0 volume</div>
+            </div>
+            <div class="scenario-stat-card">
+              <div class="scenario-stat-label">Simulated AOV</div>
+              <div class="scenario-stat-val" id="simAov">$0</div>
+              <div class="scenario-stat-delta" id="simAovDelta" style="color:var(--text-muted);"><i class="bi bi-cart"></i> Per transaction</div>
+            </div>
+            <div class="scenario-stat-card">
+              <div class="scenario-stat-label">Estimated Net Margin</div>
+              <div class="scenario-stat-val" id="simMargin" style="color:var(--accent);">18.0%</div>
+              <div class="scenario-stat-delta positive" id="simMarginDelta"><i class="bi bi-shield-check"></i> Healthy margin</div>
+            </div>
+          </div>
+
+          <!-- 30-Day Simulated Trajectory Chart -->
+          <div class="panel" style="margin-bottom:24px;">
+            <div class="panel-head">
+              <div>
+                <h3>30-Day Trajectory: Baseline vs. Simulated Horizon</h3>
+                <div class="desc">Dynamic revenue curve overlay simulating elastic demand adjustments</div>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div style="height: 320px;"><canvas id="scenarioChart"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="footerMount"></div>
+    </main>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script src="../js/theme.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/motion.js"></script>
+<script src="../js/scenario.js"></script>
+<script src="../js/command.js"></script>
+<script src="../js/exporter.js"></script>
+<script src="../js/presentation.js"></script>
+</body>
+</html>

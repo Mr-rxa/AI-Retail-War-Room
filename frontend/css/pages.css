@@ -68,3 +68,56 @@
 .prompt-input::placeholder {
   color: var(--text-muted);
 }
+
+/* AI Advisor Report Container */
+.advisor-report {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  margin-bottom: 32px;
+  color: var(--text-primary);
+  line-height: 1.7;
+}
+
+.advisor-report h1, .advisor-report h2, .advisor-report h3, .advisor-report h4 {
+  font-family: var(--font-heading);
+  color: var(--text-primary);
+  margin-top: 24px;
+  margin-bottom: 12px;
+}
+
+.advisor-report p {
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.advisor-report ul, .advisor-report ol {
+  color: var(--text-primary);
+  padding-left: 24px;
+  margin-bottom: 16px;
+}
+
+.advisor-report li {
+  margin-bottom: 6px;
+}
+
+.advisor-report code {
+  background: var(--surface-2);
+  color: var(--accent);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+
+.advisor-report blockquote {
+  border-left: 3px solid var(--accent);
+  margin: 16px 0;
+  padding: 8px 16px;
+  background: var(--accent-soft);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--text-primary);
+  font-style: italic;
+}

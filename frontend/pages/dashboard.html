@@ -7,11 +7,14 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link rel="stylesheet" href="../css/main.css">
 <link rel="stylesheet" href="../css/components.css">
+<link rel="stylesheet" href="../css/effects.css">
 <link rel="stylesheet" href="../css/dashboard.css">
+<link rel="stylesheet" href="../css/globe.css">
 
-<!-- GSAP + ScrollTrigger -->
+<!-- GSAP + ScrollTrigger + Three.js -->
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
 <!-- Lenis Smooth Scroll -->
 <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
@@ -33,6 +36,20 @@
 
     <main class="content">
       <div id="errorBanner" class="error-banner"></div>
+
+      <!-- Real-Time Stream Ticker Bar -->
+      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface-glass);border:1px solid var(--border);border-radius:var(--radius-pill);padding:8px 20px;margin-bottom:20px;" class="reveal-up">
+        <div style="display:flex;align-items:center;gap:10px;font-size:12px;">
+          <span class="live-stream-badge"><span class="live-stream-dot"></span> LIVE TELEMETRY</span>
+          <span style="color:var(--text-muted);">Stream:</span>
+          <strong id="liveTickerText" style="color:var(--text-primary);font-family:var(--font-mono);">Ingesting order stream: #94012 (São Paulo) • $184.50 (Health & Beauty)</strong>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:11.5px;color:var(--text-muted);">
+          <span>Vector Slicing: <strong style="color:var(--accent-2);">12ms</strong></span>
+          <span>•</span>
+          <a href="/chat" style="color:var(--accent);font-weight:700;display:flex;align-items:center;gap:4px;"><i class="bi bi-chat-dots"></i> Ask AI Copilot</a>
+        </div>
+      </div>
 
       <!-- Slicer Filter Panel -->
       <div class="slicer-panel reveal-up">
@@ -62,124 +79,141 @@
         </div>
       </div>
 
-      <!-- 4 Core Executive KPI Cards Hero -->
-      <div class="kpi-section-wrap">
-        <div class="kpi-grid stagger-grid">
-          <div class="kpi-card skeu-card tilt-card">
-            <div class="kpi-top">
-              <span class="kpi-label embossed-label">Gross Revenue</span>
-              <div class="kpi-icon terracotta"><i class="bi bi-currency-dollar"></i></div>
-            </div>
-            <div class="kpi-value" id="kpiRevenue">$0</div>
+      <!-- 2025 Bento Grid Architecture -->
+      <div class="bento-grid stagger-grid">
+        <!-- Tile 1: Gross Revenue Hero (Span 3) -->
+        <div class="bento-card bento-span-3 bento-hero-tile tilt-3d-card">
+          <div class="kpi-top">
+            <span class="kpi-label">Gross Revenue Velocity</span>
+            <div class="kpi-icon terracotta"><i class="bi bi-currency-dollar"></i></div>
+          </div>
+          <div class="kpi-value" id="kpiRevenue">$0</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;">
             <span class="kpi-delta up"><i class="bi bi-graph-up-arrow"></i><span id="kpiRevenueScope">Active scope</span></span>
+            <span class="pill" style="font-size:10px;"><i class="bi bi-lightning-charge-fill"></i> Real-time</span>
           </div>
-          <div class="kpi-card skeu-card tilt-card">
-            <div class="kpi-top">
-              <span class="kpi-label embossed-label">Total Orders</span>
-              <div class="kpi-icon mauve"><i class="bi bi-bag-check-fill"></i></div>
-            </div>
-            <div class="kpi-value" id="kpiOrders">0</div>
-            <span class="kpi-delta up"><i class="bi bi-people-fill"></i><span class="sub" id="kpiCustomers">0 customers</span></span>
+        </div>
+
+        <!-- Tile 2: Total Orders (Span 3) -->
+        <div class="bento-card bento-span-3 tilt-3d-card">
+          <div class="kpi-top">
+            <span class="kpi-label">Total Transactions</span>
+            <div class="kpi-icon mauve"><i class="bi bi-bag-check-fill"></i></div>
           </div>
-          <div class="kpi-card skeu-card tilt-card">
-            <div class="kpi-top">
-              <span class="kpi-label embossed-label">Avg Order Value</span>
-              <div class="kpi-icon sage"><i class="bi bi-cart-check-fill"></i></div>
-            </div>
-            <div class="kpi-value" id="kpiAov">$0</div>
+          <div class="kpi-value" id="kpiOrders">0</div>
+          <div style="margin-top:auto;">
+            <span class="kpi-delta up"><i class="bi bi-people-fill"></i><span class="sub" id="kpiCustomers">0 buyers</span></span>
+          </div>
+        </div>
+
+        <!-- Tile 3: Avg Order Value (Span 3) -->
+        <div class="bento-card bento-span-3 tilt-3d-card">
+          <div class="kpi-top">
+            <span class="kpi-label">Average Basket</span>
+            <div class="kpi-icon sage"><i class="bi bi-cart-check-fill"></i></div>
+          </div>
+          <div class="kpi-value" id="kpiAov">$0</div>
+          <div style="margin-top:auto;">
             <span class="kpi-delta up"><i class="bi bi-check-circle-fill"></i>Per order</span>
           </div>
-          <div class="kpi-card skeu-card tilt-card">
-            <div class="kpi-top">
-              <span class="kpi-label embossed-label">Unique Customers</span>
-              <div class="kpi-icon amber"><i class="bi bi-people-fill"></i></div>
-            </div>
-            <div class="kpi-value" id="kpiCustomersValue">0</div>
-            <span class="kpi-delta up"><i class="bi bi-person-check"></i>Verified buyers</span>
+        </div>
+
+        <!-- Tile 4: Unique Buyers (Span 3) -->
+        <div class="bento-card bento-span-3 tilt-3d-card">
+          <div class="kpi-top">
+            <span class="kpi-label">Verified Customers</span>
+            <div class="kpi-icon amber"><i class="bi bi-person-check-fill"></i></div>
+          </div>
+          <div class="kpi-value" id="kpiCustomersValue">0</div>
+          <div style="margin-top:auto;">
+            <span class="kpi-delta up"><i class="bi bi-shield-check"></i>Active Buyers</span>
           </div>
         </div>
-      </div>
 
-      <!-- Main Stage: Sales Trend & Monthly Velocity -->
-      <div class="panel reveal-up" style="margin-bottom: 24px;">
-        <div class="panel-head">
-          <div>
-            <h3>Monthly Sales Velocity &amp; Revenue Trajectory</h3>
-            <div class="desc">Historical revenue velocity and directional trajectory across product lines</div>
-          </div>
-        </div>
-        <div class="panel-body">
-          <div style="height: 350px;"><canvas id="revenueChart"></canvas></div>
-        </div>
-      </div>
-
-      <!-- Commercial Breakdown Stage: Top Categories & Payment Mix -->
-      <div class="row-1-1" style="margin-bottom: 24px;">
-        <div class="panel reveal-left">
-          <div class="panel-head">
+        <!-- Tile 5: Sales Trajectory Curve (Span 7) -->
+        <div class="bento-card bento-span-7">
+          <div class="panel-head" style="background:transparent;padding:0 0 16px 0;border:none;">
             <div>
-              <h3>Category Revenue Leaders</h3>
-              <div class="desc">Top performing retail product categories</div>
+              <h3 style="font-size:17px;font-weight:700;">Revenue Trajectory & Demand Curve</h3>
+              <div class="desc">Historical revenue velocity decomposed with seasonal trend projection</div>
             </div>
           </div>
-          <div class="panel-body tight">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Category</th>
-                  <th class="num">Revenue</th>
-                  <th class="num">Orders</th>
-                </tr>
-              </thead>
-              <tbody id="topCategoriesBody"></tbody>
-            </table>
-          </div>
+          <div style="height: 330px;"><canvas id="revenueChart"></canvas></div>
         </div>
 
-        <div class="panel payment-panel reveal-right">
-          <div class="panel-head">
+        <!-- Tile 6: 3D WebGL Geographic Globe (Span 5) -->
+        <div class="bento-card bento-span-5" style="padding:16px;">
+          <div class="globe-container" id="globeContainer"></div>
+        </div>
+
+        <!-- Tile 7: Category Leaders (Span 7) -->
+        <div class="bento-card bento-span-7">
+          <div class="panel-head" style="background:transparent;padding:0 0 16px 0;border:none;">
             <div>
-              <h3>Payment Method Mix</h3>
-              <div class="desc">Share of revenue transactions by payment protocol</div>
+              <h3 style="font-size:17px;font-weight:700;">Category Revenue Leaders</h3>
+              <div class="desc">Top performing retail merchandise lines</div>
             </div>
           </div>
-          <div class="panel-body">
-            <div style="height: 220px;"><canvas id="paymentChart"></canvas></div>
-            <div id="paymentLegend" class="legend-list"></div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th class="num">Revenue</th>
+                <th class="num">Orders</th>
+              </tr>
+            </thead>
+            <tbody id="topCategoriesBody"></tbody>
+          </table>
+        </div>
+
+        <!-- Tile 8: Payment Protocol Mix (Span 5) -->
+        <div class="bento-card bento-span-5">
+          <div class="panel-head" style="background:transparent;padding:0 0 16px 0;border:none;">
+            <div>
+              <h3 style="font-size:17px;font-weight:700;">Payment Protocol Share</h3>
+              <div class="desc">Settlement distribution volume</div>
+            </div>
           </div>
+          <div style="height: 200px;"><canvas id="paymentChart"></canvas></div>
+          <div id="paymentLegend" class="legend-list"></div>
         </div>
       </div>
 
       <!-- Quick Module Navigation Cards (Claymorphism) -->
       <div class="max-section-head reveal-up">
-        <h2>Intelligence Modules</h2>
+        <h2>Autonomous Intelligence Modules</h2>
       </div>
 
-      <div class="stagger-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 32px;">
+      <div class="stagger-grid" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 32px;">
+        <a href="/chat" class="clay-card module-card">
+          <div class="clay-icon" style="background: rgba(16,185,129,0.15); color: var(--accent-2);"><i class="bi bi-chat-square-dots-fill"></i></div>
+          <div style="font-size: 13.5px; font-weight: 700; color: var(--text-primary); margin: 12px 0 4px;">Ask Data AI</div>
+          <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">Conversational RAG query copilot</div>
+        </a>
+        <a href="/scenario" class="clay-card module-card">
+          <div class="clay-icon" style="background: rgba(245,158,11,0.15); color: var(--accent-amber);"><i class="bi bi-sliders2"></i></div>
+          <div style="font-size: 13.5px; font-weight: 700; color: var(--text-primary); margin: 12px 0 4px;">What-If Modeler</div>
+          <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">Price elasticity & expansion simulator</div>
+        </a>
         <a href="/customer" class="clay-card module-card">
           <div class="clay-icon" style="background: rgba(184,92,56,0.12); color: var(--accent);"><i class="bi bi-speedometer2"></i></div>
-          <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin: 12px 0 4px;">Customer Intelligence</div>
-          <div style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.4;">RFM cohorts & buyer distribution</div>
+          <div style="font-size: 13.5px; font-weight: 700; color: var(--text-primary); margin: 12px 0 4px;">Customer Intelligence</div>
+          <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">RFM cohorts & buyer distribution</div>
         </a>
         <a href="/insights" class="clay-card module-card">
           <div class="clay-icon" style="background: rgba(90,125,95,0.12); color: var(--accent-2);"><i class="bi bi-diagram-3-fill"></i></div>
-          <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin: 12px 0 4px;">Causal Analysis</div>
-          <div style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.4;">Revenue driver attribution & cause graphs</div>
+          <div style="font-size: 13.5px; font-weight: 700; color: var(--text-primary); margin: 12px 0 4px;">Causal Analysis</div>
+          <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">Driver attribution & graph models</div>
         </a>
         <a href="/advisor" class="clay-card module-card">
-          <div class="clay-icon" style="background: rgba(196,135,42,0.12); color: var(--accent-amber);"><i class="bi bi-sliders"></i></div>
-          <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin: 12px 0 4px;">AI Advisor Lab</div>
-          <div style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.4;">Gemini strategic scenario generator</div>
+          <div class="clay-icon" style="background: rgba(196,135,42,0.12); color: var(--accent-amber);"><i class="bi bi-cpu-fill"></i></div>
+          <div style="font-size: 13.5px; font-weight: 700; color: var(--text-primary); margin: 12px 0 4px;">AI Advisor Lab</div>
+          <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">Autonomous strategy generator</div>
         </a>
         <a href="/anomaly" class="clay-card module-card">
           <div class="clay-icon" style="background: rgba(184,92,56,0.12); color: var(--accent);"><i class="bi bi-shield-exclamation"></i></div>
-          <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin: 12px 0 4px;">Anomaly Detection</div>
-          <div style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.4;">IsolationForest outlier prediction</div>
-        </a>
-        <a href="/forecast" class="clay-card module-card">
-          <div class="clay-icon" style="background: rgba(123,107,141,0.12); color: var(--accent-mauve);"><i class="bi bi-graph-up-arrow"></i></div>
-          <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin: 12px 0 4px;">Sales Forecast</div>
-          <div style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.4;">Prophet 30-day sales forecasting</div>
+          <div style="font-size: 13.5px; font-weight: 700; color: var(--text-primary); margin: 12px 0 4px;">Anomaly Detection</div>
+          <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">IsolationForest outlier prediction</div>
         </a>
       </div>
 
@@ -191,13 +225,17 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <script src="../js/config.js"></script>
+<script src="../js/theme.js"></script>
 <script src="../js/utils.js"></script>
 <script src="../js/api.js"></script>
 <script src="../js/charts.js"></script>
+<script src="../js/globe.js"></script>
 <script src="../js/dashboard.js"></script>
 <script src="../js/motion.js"></script>
 <script src="../js/particles.js"></script>
 <script src="../js/preloader.js"></script>
 <script src="../js/command.js"></script>
+<script src="../js/exporter.js"></script>
+<script src="../js/presentation.js"></script>
 </body>
 </html>

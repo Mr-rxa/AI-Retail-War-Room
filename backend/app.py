@@ -1,12 +1,19 @@
+import os
+import sys
+
+# Ensure root directory is in sys.path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from flask import Flask, send_from_directory
 from flask_cors import CORS
-import os
 from backend.controllers.ai_controller import ai_controller
 from backend.controllers.analytics_controller import analytics_controller
 from backend.controllers.anomaly_controller import anomaly_controller
 from backend.controllers.dashboard_controller import dashboard_controller
 from backend.controllers.forecast_controller import forecast_controller
 from backend.controllers.upload_controller import upload_controller
+from backend.controllers.chat_controller import chat_controller
+from backend.controllers.scenario_controller import scenario_controller
 from backend.middleware.error_handler import register_error_handlers
 from backend.utils.cache import cache
 from flasgger import Swagger
@@ -22,8 +29,6 @@ app = Flask(
     static_url_path=""
 )
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100 MB max request body size
-
-
 
 Swagger(app)
 cache.init_app(app)
@@ -62,6 +67,16 @@ app.register_blueprint(
     url_prefix="/api/upload"
 )
 
+app.register_blueprint(
+    chat_controller,
+    url_prefix="/api/chat"
+)
+
+app.register_blueprint(
+    scenario_controller,
+    url_prefix="/api/scenario"
+)
+
 @app.route("/")
 def index():
     return send_from_directory(FRONTEND_DIR, "index.html")
@@ -72,6 +87,18 @@ def index():
 @app.route("/pages/dashboard.html")
 def dashboard():
     return send_from_directory(PAGES_DIR, "dashboard.html")
+
+@app.route("/chat")
+@app.route("/chat.html")
+@app.route("/pages/chat.html")
+def chat():
+    return send_from_directory(PAGES_DIR, "chat.html")
+
+@app.route("/scenario")
+@app.route("/scenario.html")
+@app.route("/pages/scenario.html")
+def scenario():
+    return send_from_directory(PAGES_DIR, "scenario.html")
 
 @app.route("/advisor")
 @app.route("/advisor.html")

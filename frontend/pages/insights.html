@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link rel="stylesheet" href="../css/main.css">
 <link rel="stylesheet" href="../css/components.css">
+<link rel="stylesheet" href="../css/effects.css">
 <link rel="stylesheet" href="../css/pages.css">
 
 <!-- GSAP + ScrollTrigger -->
@@ -35,22 +36,22 @@
       <div class="max-section-head reveal-up"><h2>Structural Causal Brief</h2></div>
       <div class="kpi-grid stagger-grid" id="insightBriefGrid" style="margin-bottom:24px;">
         <div class="kpi-card skeu-card tilt-card">
-          <div class="kpi-label embossed-label">Business Health Score</div>
+          <div class="kpi-top"><span class="kpi-label embossed-label">Business Health Score</span><div class="kpi-icon sage"><i class="bi bi-shield-check"></i></div></div>
           <div class="kpi-value" id="briefHealthValue" style="color:var(--accent-2);">-</div>
           <div style="font-size:12px;color:var(--text-muted);" id="briefHealthNote">Overall stability score</div>
         </div>
         <div class="kpi-card skeu-card tilt-card">
-          <div class="kpi-label embossed-label">Retention Continuity</div>
+          <div class="kpi-top"><span class="kpi-label embossed-label">Retention Continuity</span><div class="kpi-icon terracotta"><i class="bi bi-arrow-repeat"></i></div></div>
           <div class="kpi-value" id="briefRetentionValue" style="color:var(--accent);">-</div>
           <div style="font-size:12px;color:var(--text-muted);" id="briefRetentionNote">Customer continuity</div>
         </div>
         <div class="kpi-card skeu-card tilt-card">
-          <div class="kpi-label embossed-label">30-Day Trajectory</div>
+          <div class="kpi-top"><span class="kpi-label embossed-label">30-Day Trajectory</span><div class="kpi-icon amber"><i class="bi bi-graph-up-arrow"></i></div></div>
           <div class="kpi-value" id="briefForecastValue" style="color:var(--accent-amber);">-</div>
           <div style="font-size:12px;color:var(--text-muted);" id="briefForecastNote">Projected revenue shift</div>
         </div>
         <div class="kpi-card skeu-card tilt-card">
-          <div class="kpi-label embossed-label">Risk Exposure</div>
+          <div class="kpi-top"><span class="kpi-label embossed-label">Risk Exposure</span><div class="kpi-icon mauve"><i class="bi bi-exclamation-octagon-fill"></i></div></div>
           <div class="kpi-value" id="briefRiskValue" style="color:var(--accent-mauve);">-</div>
           <div style="font-size:12px;color:var(--text-muted);" id="briefRiskNote">Margin &amp; anomaly risk</div>
         </div>
@@ -89,6 +90,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <script src="../js/config.js"></script>
+<script src="../js/theme.js"></script>
 <script src="../js/utils.js"></script>
 <script src="../js/api.js"></script>
 <script src="../js/charts.js"></script>
@@ -97,5 +99,7 @@
 <script src="../js/particles.js"></script>
 <script src="../js/preloader.js"></script>
 <script src="../js/command.js"></script>
+<script src="../js/exporter.js"></script>
+<script src="../js/presentation.js"></script>
 </body>
 </html>

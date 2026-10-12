@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ask Data AI — AI Retail War Room</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link rel="stylesheet" href="../css/main.css">
+<link rel="stylesheet" href="../css/components.css">
+<link rel="stylesheet" href="../css/effects.css">
+<link rel="stylesheet" href="../css/chat.css">
+
+<!-- GSAP -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body data-page="chat">
+
+<div class="blob-wrap">
+  <div class="blob blob-terracotta"></div>
+  <div class="blob blob-sage"></div>
+  <div class="blob blob-amber"></div>
+</div>
+
+<div class="app-shell">
+  <div id="sidebarMount"></div>
+
+  <div class="main-col">
+    <div id="navbarMount"></div>
+
+    <main class="content" style="max-width: 1300px; padding-bottom: 24px;">
+      <div id="errorBanner" class="error-banner"></div>
+
+      <div class="chat-container reveal-up">
+        <div class="chat-header">
+          <div class="chat-header-title">
+            <div class="chat-avatar"><i class="bi bi-robot"></i></div>
+            <div>
+              <div style="font-size: 15px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                Retail Neural Copilot
+                <span class="live-stream-badge"><span class="live-stream-dot"></span> Live RAG</span>
+              </div>
+              <div style="font-size: 11.5px; color: var(--text-muted);">Grounded on active dataset telemetry • Zero Hallucination Engine</div>
+            </div>
+          </div>
+          <button class="btn-outline" id="clearChatBtn" style="padding: 6px 14px; font-size: 12px;"><i class="bi bi-trash3"></i> Clear History</button>
+        </div>
+
+        <div class="chat-messages-area" id="chatMessagesArea">
+          <!-- Initial AI Welcome Message -->
+          <div class="chat-bubble ai">
+            <div class="chat-avatar" style="width: 32px; height: 32px; font-size: 16px;"><i class="bi bi-robot"></i></div>
+            <div class="bubble-content">
+              <strong>Hello! I am your AI Chief Commercial Officer.</strong><br>
+              I have ingested your retail session telemetry. Ask me anything about regional revenue, product margins, customer churn cohorts, or upcoming sales trends — and I will generate executive insights and instant charts.
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-quick-prompts" id="chatQuickPrompts">
+          <div class="prompt-chip" data-prompt="Which state had the highest revenue and volume?">📍 Regional Revenue Breakdown</div>
+          <div class="prompt-chip" data-prompt="What are the top 5 revenue-driving categories?">🛍️ Top Categories Share</div>
+          <div class="prompt-chip" data-prompt="Break down our payment method mix and settlement share">💳 Payment Method Mix</div>
+          <div class="prompt-chip" data-prompt="Analyze customer RFM segments and churn risk">👥 RFM Customer Cohorts</div>
+          <div class="prompt-chip" data-prompt="Give me an executive summary of current business health">📊 30-Day Executive Summary</div>
+        </div>
+
+        <form class="chat-input-bar" id="chatForm">
+          <input type="text" class="chat-input-field" id="chatInput" placeholder="Ask a question about your sales, products, or customers... (e.g. 'Show revenue by state')" autocomplete="off">
+          <button type="submit" class="chat-send-btn" id="chatSendBtn" title="Send Query"><i class="bi bi-arrow-up"></i></button>
+        </form>
+      </div>
+
+      <div id="footerMount"></div>
+    </main>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script src="../js/theme.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/motion.js"></script>
+<script src="../js/chat.js"></script>
+<script src="../js/command.js"></script>
+<script src="../js/exporter.js"></script>
+<script src="../js/presentation.js"></script>
+</body>
+</html>

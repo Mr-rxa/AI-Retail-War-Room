@@ -94,23 +94,67 @@ const Motion = (() => {
   }
 
   function initCardTilt() {
-    const cards = document.querySelectorAll('.kpi-card, .panel, .clay-card');
+    const cards = document.querySelectorAll('.kpi-card, .panel, .clay-card, .bento-card, .tilt-3d-card');
     cards.forEach(card => {
+      // Ensure glare element exists
+      if (!card.querySelector('.tilt-glare')) {
+        const glare = document.createElement('div');
+        glare.className = 'tilt-glare';
+        card.appendChild(glare);
+      }
+
+      let rafId = null;
       card.addEventListener('mousemove', e => {
-        const rect = card.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-        const dx = (e.clientX - cx) / (rect.width / 2);
-        const dy = (e.clientY - cy) / (rect.height / 2);
-        card.style.transform = `perspective(1000px) rotateX(${dy * -5}deg) rotateY(${dx * 5}deg) translateY(-4px)`;
-        card.style.transition = 'transform 0.1s ease-out';
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const cx = rect.width / 2;
+          const cy = rect.height / 2;
+          const dx = (x - cx) / cx;
+          const dy = (y - cy) / cy;
+
+          // Set dynamic glare position
+          card.style.setProperty('--glare-x', `${(x / rect.width) * 100}%`);
+          card.style.setProperty('--glare-y', `${(y / rect.height) * 100}%`);
+
+          // Apply 3D matrix tilt
+          card.style.transform = `perspective(1000px) rotateX(${dy * -8}deg) rotateY(${dx * 8}deg) scale3d(1.015, 1.015, 1.015) translateY(-4px)`;
+          card.style.transition = 'transform 0.08s ease-out';
+        });
       });
 
       card.addEventListener('mouseleave', () => {
-        card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
-        card.style.transition = 'transform 0.4s var(--ease-spring)';
+        if (rafId) cancelAnimationFrame(rafId);
+        card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1) translateY(0px)';
+        card.style.transition = 'transform 0.5s var(--ease-bounce)';
       });
     });
+  }
+
+  // Web Audio Synthesized Micro-Haptic Click
+  let audioCtx = null;
+  function playClickSound(freq = 440, type = 'sine') {
+    try {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.5, audioCtx.currentTime + 0.04);
+      gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.04);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.04);
+    } catch (e) {}
   }
 
   function initMagneticCursor() {
@@ -137,7 +181,7 @@ const Motion = (() => {
     requestAnimationFrame(loop);
 
     document.addEventListener('mouseover', e => {
-      const target = e.target.closest('a, button, input, select, .kpi-card, .panel, .cmd-item');
+      const target = e.target.closest('a, button, input, select, .kpi-card, .panel, .cmd-item, .bento-card');
       if (target) {
         cursor.classList.add('hovering');
       } else {
@@ -148,8 +192,9 @@ const Motion = (() => {
 
   function initRipple() {
     document.addEventListener('click', e => {
-      const btn = e.target.closest('.btn-primary, .btn-outline, .btn-push, .sidebar-nav a');
+      const btn = e.target.closest('.btn-primary, .btn-outline, .btn-push, .sidebar-nav a, .theme-toggle-btn');
       if (!btn) return;
+      playClickSound(580, 'triangle');
       const rect = btn.getBoundingClientRect();
       const ripple = document.createElement('span');
       ripple.className = 'ripple';
@@ -171,5 +216,5 @@ const Motion = (() => {
 
   document.addEventListener('DOMContentLoaded', initAll);
 
-  return { initLenis, initScrollReveal, initCardTilt };
+  return { initLenis, initScrollReveal, initCardTilt, playClickSound };
 })();

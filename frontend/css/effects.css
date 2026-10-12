@@ -20,11 +20,11 @@
 }
 
 .glass-l3 {
-  background: rgba(250, 247, 242, 0.96);
+  background: var(--surface);
   backdrop-filter: blur(32px) saturate(200%);
   -webkit-backdrop-filter: blur(32px) saturate(200%);
-  border: 1px solid rgba(184, 92, 56, 0.18);
-  box-shadow: 0 32px 80px rgba(100, 80, 60, 0.20), 0 1px 0 rgba(255, 255, 255, 0.95) inset;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xl);
 }
 
 .glass-iridescent {
@@ -207,30 +207,133 @@
 }
 
 /* ── 6. Section Dots Rail ── */
-.section-nav-dots {
-  position: fixed;
-  right: 24px;
-  top: 50%;
-  transform: translateY(-50%);
+/* ── 7. Bento Grid 2025 Architecture ── */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.bento-card {
+  background: var(--surface-glass);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 24px 28px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: visible;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.3s ease;
+}
+
+.bento-card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-lg), var(--glow-accent);
+}
+
+.bento-span-3 {
+  grid-column: span 3;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  z-index: 50;
+  justify-content: space-between;
+  min-height: 154px;
 }
-.section-dot {
-  width: 8px;
-  height: 8px;
+.bento-span-4 { grid-column: span 4; }
+.bento-span-5 { grid-column: span 5; }
+.bento-span-6 { grid-column: span 6; }
+.bento-span-7 { grid-column: span 7; }
+.bento-span-8 { grid-column: span 8; }
+.bento-span-12 { grid-column: span 12; }
+
+.bento-hero-tile {
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1.5px solid var(--border);
+  position: relative;
+}
+
+.bento-hero-tile::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 240px;
+  height: 240px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  pointer-events: none;
   border-radius: 50%;
-  background: rgba(140, 120, 96, 0.30);
-  transition: all 0.3s var(--ease-spring);
-  cursor: pointer;
+  filter: blur(30px);
 }
-.section-dot:hover {
-  background: var(--accent);
-  transform: scale(1.3);
+
+/* ── 8. Spatial 3D Tilt & Holographic Glare ── */
+.tilt-3d-wrap {
+  perspective: 1200px;
+  transform-style: preserve-3d;
 }
-.section-dot.active {
-  background: var(--accent);
-  box-shadow: 0 0 10px rgba(184, 92, 56, 0.4);
-  transform: scale(1.6);
+
+.tilt-3d-card {
+  transition: transform 0.15s ease-out, box-shadow 0.25s ease;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
+
+.tilt-3d-card .tilt-layer-3d {
+  transform: translateZ(24px);
+  transform-style: preserve-3d;
+}
+
+.tilt-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle 320px at var(--glare-x, 50%) var(--glare-y, 50%), rgba(255, 255, 255, 0.22), transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 5;
+}
+
+.tilt-3d-card:hover .tilt-glare {
+  opacity: 1;
+}
+
+/* ── 9. Live Live-Stream Pulse Badge ── */
+.live-stream-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #EF4444;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.live-stream-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #EF4444;
+  animation: livePing 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes livePing {
+  0% { transform: scale(0.9); opacity: 1; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { transform: scale(1.1); opacity: 0.8; box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+  100% { transform: scale(0.9); opacity: 1; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+@media (max-width: 1200px) {
+  .bento-span-3 { grid-column: span 6; }
+  .bento-span-4, .bento-span-5, .bento-span-6, .bento-span-7, .bento-span-8 { grid-column: span 12; }
+}
+
+@media (max-width: 700px) {
+  .bento-span-3 { grid-column: span 12; }
+}
+

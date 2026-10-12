@@ -4,12 +4,19 @@
     <div class="crumbs" id="topbarCrumbs">AI Retail War Room / Analytics</div>
   </div>
   <div class="topbar-actions" id="topbarActions">
-    <button class="topbar-cmd-hint" id="topbarCmdBtn" title="Search commands & pages">
+    <button class="topbar-cmd-hint" id="topbarCmdBtn" title="Search commands & pages (⌘K)">
       <i class="bi bi-search"></i>
       <span>Search</span>
       <kbd>⌘K</kbd>
     </button>
+    <button class="btn-outline theme-toggle-btn" id="themeToggleBtn" onclick="ThemeManager.toggle()" title="Toggle Dark/Light Mode (⌘T)">
+      <i class="bi bi-moon-stars-fill"></i>
+    </button>
+    <button class="btn-outline" id="presentationModeBtn" title="Launch Interactive Presentation Mode (Press P)">
+      <i class="bi bi-easel-fill" style="color:var(--accent);"></i>
+      <span>Present</span>
+    </button>
     <button class="btn-outline" id="refreshBtn"><i class="bi bi-arrow-clockwise"></i>Refresh</button>
-    <button class="btn-primary" id="exportBtn"><i class="bi bi-download"></i>Export</button>
+    <button class="btn-primary" id="exportPdfBtn" title="Generate Executive Dossier PDF"><i class="bi bi-file-earmark-pdf-fill"></i>Export PDF</button>
   </div>
 </header>
