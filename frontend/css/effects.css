@@ -337,3 +337,57 @@
   .bento-span-3 { grid-column: span 12; }
 }
 
+/* ── 10. Interactive Presentation Mode & Spotlight ── */
+.presentation-active {
+  overflow-x: hidden;
+}
+
+.presentation-highlight {
+  position: relative !important;
+  z-index: 99999 !important;
+  outline: 2.5px solid var(--accent, #F97316) !important;
+  outline-offset: 6px !important;
+  box-shadow: 0 0 35px rgba(249, 115, 22, 0.55), 0 0 0 9999px rgba(8, 12, 22, 0.78) !important;
+  border-radius: var(--radius-lg, 12px) !important;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  pointer-events: auto !important;
+}
+
+#presentationOverlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100000;
+}
+
+.presentation-hud {
+  pointer-events: auto;
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100001;
+  background: rgba(18, 25, 42, 0.94);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1.5px solid var(--accent, #F97316);
+  border-radius: 16px;
+  padding: 18px 26px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65), 0 0 24px rgba(249, 115, 22, 0.3);
+  max-width: 680px;
+  width: 90%;
+  color: #F8FAFC;
+  animation: presHudSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes presHudSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+

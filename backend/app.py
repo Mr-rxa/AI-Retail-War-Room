@@ -4,7 +4,7 @@ import sys
 # Ensure root directory is in sys.path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, redirect
 from flask_cors import CORS
 from backend.controllers.ai_controller import ai_controller
 from backend.controllers.analytics_controller import analytics_controller
@@ -135,6 +135,14 @@ def insights():
 @app.route("/pages/upload.html")
 def upload_page():
     return send_from_directory(PAGES_DIR, "upload.html")
+
+
+@app.route("/present")
+@app.route("/present.html")
+@app.route("/presentation")
+@app.route("/presentation.html")
+def presentation_page():
+    return redirect("/dashboard?present=1")
 
 
 

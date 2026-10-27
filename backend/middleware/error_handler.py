@@ -1,22 +1,24 @@
 from loguru import logger
-
+from werkzeug.exceptions import HTTPException
 from backend.utils.api_response import error
 
 
 def handle_exception(e):
+    if isinstance(e, HTTPException):
+        logger.warning(f"HTTP {e.code}: {e.description}")
+        return error(
+            message=e.name or "HTTP Error",
+            status=e.code,
+            error_code="NOT_FOUND" if e.code == 404 else f"HTTP_{e.code}",
+            details=e.description
+        )
 
     logger.exception(e)
-
     return error(
-
         message="Internal Server Error",
-
         status=500,
-
         error_code="SERVER_ERROR",
-
         details=str(e)
-
     )
 
 
