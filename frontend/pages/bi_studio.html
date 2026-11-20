@@ -192,7 +192,7 @@
       </div>
 
       <!-- AI Natural Language to SQL Copilot -->
-      <div class="ai-copilot-card reveal-up">
+      <div class="ai-copilot-card" style="opacity:1 !important; transform:none !important;">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
           <div style="display:flex;align-items:center;gap:8px;">
             <i class="bi bi-stars" style="color:#38BDF8;font-size:18px;"></i>
@@ -212,7 +212,7 @@
       </div>
 
       <!-- Interactive SQL Editor & Schema Explorer -->
-      <div class="bi-grid reveal-up">
+      <div class="bi-grid" style="opacity:1 !important; transform:none !important;">
         <!-- Editor Box -->
         <div class="sql-editor-wrap">
           <div class="sql-toolbar">
@@ -224,7 +224,7 @@
             <div style="display:flex;gap:6px;">
               <button class="btn-outline btn-push" id="formatSqlBtn" style="font-size:11px;padding:4px 8px;" title="Format Query"><i class="bi bi-magic"></i>Format</button>
               <button class="btn-outline btn-push" id="clearSqlBtn" style="font-size:11px;padding:4px 8px;" title="Clear Editor"><i class="bi bi-trash"></i>Clear</button>
-              <button class="btn-primary btn-push" id="runSqlBtn" style="font-size:11px;padding:4px 12px;"><i class="bi bi-play-fill"></i>Run Query (⌘Enter)</button>
+              <button class="btn-primary btn-push" id="runSqlBtn" style="font-size:12px;padding:6px 16px;background:var(--accent);font-weight:600;"><i class="bi bi-play-fill"></i>Run Query (⌘Enter)</button>
             </div>
           </div>
           <textarea id="sqlTextarea" class="sql-textarea" spellcheck="false">SELECT 
@@ -250,7 +250,7 @@ LIMIT 10;</textarea>
       </div>
 
       <!-- Query Results & Visualizer -->
-      <div class="panel reveal-up" style="margin-bottom:24px;">
+      <div class="panel" style="margin-bottom:24px;opacity:1 !important; transform:none !important;">
         <div class="query-meta-bar">
           <div style="display:flex;align-items:center;gap:12px;">
             <span id="queryStatusBadge" class="badge success"><i class="bi bi-check-circle-fill"></i> Ready</span>
