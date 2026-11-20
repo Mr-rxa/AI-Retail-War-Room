@@ -5,10 +5,13 @@ Generates structured answers, inline chart visualization payloads, and statistic
 """
 import os
 import re
+import concurrent.futures
 from backend.engines import session_store
 from backend.engines.demo_data import get_demo_analytics, get_demo_dashboard
 from backend.services.analytics_service import analytics_summary
 from backend.services.dashboard_service import get_dashboard
+
+_GEMINI_EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=2)
 
 def query_data_ai(user_query, session_id=None, filters=None):
     query = (user_query or "").strip().lower()
@@ -55,13 +58,16 @@ Dataset Summary:
 
 User Query: "{user_query}"
 
-Provide a crisp, executive-grade analysis (1-2 paragraphs) with concrete numbers from the summary. Highlight strategic actions.
+Instructions:
+1. If the user query is a greeting (e.g. "hi", "hello", "hey"), greet them warmly as the AI Chief Commercial Officer in 1-2 friendly sentences and invite them to explore sales, products, or customers. Do NOT output a full performance summary.
+2. If the user query is nonsensical, gibberish (e.g. random keystrokes like "asdfgh"), or completely unrelated to business/retail (e.g. general trivia, recipes, weather), politely say in 1-2 sentences that you only answer retail decision intelligence queries about their business data, and suggest 2 relevant questions. Do NOT generate a business performance summary.
+3. If the user query is a valid business or retail question, provide a crisp, executive-grade analysis (1-2 paragraphs) with concrete numbers from the summary. Highlight strategic actions.
 """
         def _fetch_gemini():
             try:
                 from google import genai
                 client = genai.Client(api_key=gemini_key)
-                for m_name in ['gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-flash-latest']:
+                for m_name in ['gemini-3.8-flash', 'gemini-3.5-flash']:
                     try:
                         res = client.models.generate_content(model=m_name, contents=prompt)
                         if res and res.text:
@@ -72,15 +78,42 @@ Provide a crisp, executive-grade analysis (1-2 paragraphs) with concrete numbers
                 pass
             return None
 
-        import concurrent.futures
-        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-            future = executor.submit(_fetch_gemini)
-            try:
-                gen_text = future.result(timeout=3.5)
-            except Exception:
-                gen_text = None
+        future = _GEMINI_EXECUTOR.submit(_fetch_gemini)
+        try:
+            gen_text = future.result(timeout=2.5)
+        except Exception:
+            gen_text = None
 
     # NLP Intent Matching & Dynamic Chart Construction
+    # 0. Greetings & Identity Queries
+    GREETINGS = {"hi", "hello", "hey", "greetings", "good morning", "good afternoon", "good evening", "who are you", "what are you", "what can you do", "help", "howdy", "sup"}
+    is_greeting = query in GREETINGS or any(query.startswith(g + " ") for g in ["hi", "hello", "hey"])
+    if is_greeting:
+        answer = gen_text or (
+            "👋 **Hello! I am your AI Chief Commercial Officer in the AI Retail War Room.**\n\n"
+            "I continuously monitor your retail telemetry, transaction velocity, regional hubs, and customer cohorts.\n\n"
+            "**Here are a few questions you can ask me:**\n"
+            "• 📊 *\"What is our overall revenue and order volume?\"*\n"
+            "• 📍 *\"Which state had the highest sales?\"*\n"
+            "• 🛍️ *\"What are the top 5 product categories?\"*\n"
+            "• 👥 *\"Analyze customer RFM segments and churn risk\"*\n"
+            "• ⚡ *\"Are there any revenue anomalies or pricing leaks?\"*\n"
+            "• 🚚 *\"How is delivery performance and transit speed?\"*\n"
+            "• 📈 *\"Forecast sales for the next 30 days\"*"
+        )
+        return {
+            "success": True,
+            "answer": answer,
+            "chart_type": None,
+            "chart_data": None,
+            "metric_highlights": [
+                {"label": "Gross Revenue", "value": rev_str},
+                {"label": "Total Orders", "value": orders_str},
+                {"label": "Average Basket", "value": aov_str}
+            ],
+            "suggested_followups": ["Executive revenue summary", "Which state has highest sales?", "Top product categories", "Check for revenue anomalies"]
+        }
+
     # 1. State / Regional queries
     if any(w in query for w in ["state", "region", "geograph", "city", "territory", "where"]) or bool(re.search(r'\b(sp|rj|mg|pr|sc|rs|ba)\b', query)):
         top_state = states[0] if states else {"customer_state": "SP", "revenue": 0, "orders": 0}
@@ -110,7 +143,7 @@ Provide a crisp, executive-grade analysis (1-2 paragraphs) with concrete numbers
         }
 
     # 2. Category / Product queries
-    if any(w in query for w in ["category", "product", "item", "health", "beauty", "watches", "furniture", "best sell"]):
+    if any(w in query for w in ["categor", "product", "item", "sku", "merchandis", "catalog", "health", "beauty", "watches", "furniture", "best sell", "top sell"]):
         top_cat = categories[0] if categories else {"category": "health_beauty", "revenue": 0}
         chart_data = {
             "labels": [c.get("category", "Item").replace("_", " ").title() for c in categories[:5]],
@@ -276,32 +309,72 @@ Provide a crisp, executive-grade analysis (1-2 paragraphs) with concrete numbers
             "suggested_followups": ["Simulate marketing budget boost", "What are top categories?"]
         }
 
-    # 8. Default Revenue / Performance Overview
-    chart_data = {
-        "labels": [m.get("month", "") for m in monthly],
-        "datasets": [{
-            "label": "Monthly Sales Trajectory",
-            "data": [m.get("revenue", 0) for m in monthly],
-            "borderColor": "#F97316",
-            "backgroundColor": "rgba(249, 115, 22, 0.12)",
-            "fill": True,
-            "tension": 0.4
-        }]
-    }
+    # 8. Explicit Revenue / Performance Summary
+    summary_keywords = [
+        "revenue", "sales", "summary", "overview", "performance", "kpi", "trajectory",
+        "trend", "commercial", "how are we doing", "business", "dashboard", "report",
+        "stats", "finance", "growth", "total", "volume", "overall", "health", "status",
+        "earnings", "numbers", "benchmark", "executive", "how much", "financial"
+    ]
+    is_summary_query = any(w in query for w in summary_keywords)
+    if is_summary_query:
+        chart_data = {
+            "labels": [m.get("month", "") for m in monthly],
+            "datasets": [{
+                "label": "Monthly Sales Trajectory",
+                "data": [m.get("revenue", 0) for m in monthly],
+                "borderColor": "#F97316",
+                "backgroundColor": "rgba(249, 115, 22, 0.12)",
+                "fill": True,
+                "tension": 0.4
+            }]
+        }
+        answer = gen_text or (
+            f"**Executive Commercial Summary:** The business has generated **{rev_str}** across **{orders_str} orders** "
+            f"with an Average Order Value (AOV) of **{aov_str}**. "
+            f"Monthly revenue velocity demonstrates stable expansion with seasonal peaks across prime promotional quarters."
+        )
+        return {
+            "success": True,
+            "answer": answer,
+            "chart_type": "line",
+            "chart_data": chart_data,
+            "metric_highlights": [
+                {"label": "Total Revenue", "value": rev_str},
+                {"label": "Total Orders", "value": orders_str},
+                {"label": "Average Order Value", "value": aov_str}
+            ],
+            "suggested_followups": ["Which state had highest sales?", "Breakdown by product category", "Check for revenue anomalies"]
+        }
+
+    # 9. Fallback for Unrecognized / Random / Off-Topic queries
+    # Do not dump executive performance summary or monthly chart for arbitrary words
     answer = gen_text or (
-        f"**Executive Commercial Summary:** The business has generated **{rev_str}** across **{orders_str} orders** "
-        f"with an Average Order Value (AOV) of **{aov_str}**. "
-        f"Monthly revenue velocity demonstrates stable expansion with seasonal peaks across prime promotional quarters."
+        "🤔 **I couldn't identify a matching retail metric or dataset dimension for that query.**\n\n"
+        "As your **AI Chief Commercial Officer**, I am tuned specifically to analyze your retail telemetry, customer cohorts, and transaction metrics. "
+        "Here are common business questions you can ask me:\n\n"
+        "• 📊 **Revenue & Orders:** *\"What is our total revenue and monthly sales trend?\"*\n"
+        "• 📍 **Regional Sales:** *\"Which state or territory generates the highest sales?\"*\n"
+        "• 🛍️ **Product Catalog:** *\"What are our top-performing product categories?\"*\n"
+        "• 👥 **Customer Retention:** *\"Show me customer RFM segments and churn risk\"*\n"
+        "• ⚠️ **Risk & Pricing:** *\"Are there any revenue anomalies or pricing leaks?\"*\n"
+        "• 🚚 **Logistics:** *\"How is delivery speed and fulfillment performance?\"*\n"
+        "• 📈 **Demand Outlook:** *\"Forecast sales trajectory for the next 30 days\"*"
     )
     return {
         "success": True,
         "answer": answer,
-        "chart_type": "line",
-        "chart_data": chart_data,
+        "chart_type": None,
+        "chart_data": None,
         "metric_highlights": [
-            {"label": "Total Revenue", "value": rev_str},
+            {"label": "Gross Revenue", "value": rev_str},
             {"label": "Total Orders", "value": orders_str},
-            {"label": "Average Order Value", "value": aov_str}
+            {"label": "Average Basket", "value": aov_str}
         ],
-        "suggested_followups": ["Which state had highest sales?", "Breakdown by product category", "Check for revenue anomalies"]
+        "suggested_followups": [
+            "Executive revenue summary",
+            "Which state has highest sales?",
+            "Top product categories",
+            "Check for revenue anomalies"
+        ]
     }
