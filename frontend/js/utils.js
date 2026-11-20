@@ -206,6 +206,19 @@ const Utils = (() => {
     URL.revokeObjectURL(url);
   }
 
+  function downloadCsv(filename, rows, columns) {
+    if (!rows || !rows.length) return;
+    const cols = columns || Object.keys(rows[0]);
+    const csvContent = [
+      cols.map(c => `"${String(c).replace(/"/g, '""')}"`).join(','),
+      ...rows.map(row => cols.map(c => {
+        const val = row[c] !== undefined && row[c] !== null ? row[c] : '';
+        return `"${String(val).replace(/"/g, '""')}"`;
+      }).join(','))
+    ].join('\r\n');
+    downloadFile(filename || 'export.csv', csvContent, 'text/csv;charset=utf-8;');
+  }
+
   function getGlobalFilters() {
     try {
       const raw = localStorage.getItem(FILTER_STORAGE_KEY);
@@ -571,7 +584,7 @@ const Utils = (() => {
   return {
     formatCurrency, formatNumber, formatPercent, formatMonthLabel, formatDateLabel,
     timeAgoOrDate, animateValue, qs, qsa, el, stateName, categoryLabel, paymentLabel,
-    loadPartial, loadLayout, downloadFile, getGlobalFilters, setGlobalFilters,
+    loadPartial, loadLayout, downloadFile, downloadCsv, getGlobalFilters, setGlobalFilters,
     clearGlobalFilters, formatFilterSummary, ensureScopeBanner, updateScopeBanner,
     updateDataSourceBadge, showLoader, hideLoader, getCache, setCache, clearAllCaches,
     prefetchAll, showTelemetryProgress, updateTelemetryStep, hideTelemetryProgress,

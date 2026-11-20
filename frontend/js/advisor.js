@@ -18,7 +18,12 @@
     Utils.qs('#generateBtn').addEventListener('click', () => load(true));
     Utils.qs('#regenerateBtn').addEventListener('click', () => load(true));
     Utils.qs('#copyBtn').addEventListener('click', copyReport);
-    Utils.qs('#downloadBtn').addEventListener('click', downloadReport);
+    if (Utils.qs('#exportMdBtn')) Utils.qs('#exportMdBtn').addEventListener('click', downloadReport);
+    if (Utils.qs('#downloadBtn')) Utils.qs('#downloadBtn').addEventListener('click', () => {
+      if (typeof ReportExporter !== 'undefined') {
+        ReportExporter.exportExecutivePdf();
+      }
+    });
   }
 
   function copyReport() {
@@ -58,6 +63,7 @@
       rawMarkdown = typeof data === 'string' ? data : (data.report || data.markdown || '');
       renderReport(rawMarkdown);
       Utils.qs('#copyBtn').disabled = false;
+      if (Utils.qs('#exportMdBtn')) Utils.qs('#exportMdBtn').disabled = false;
       Utils.qs('#downloadBtn').disabled = false;
     } catch (err) {
       console.error(err);

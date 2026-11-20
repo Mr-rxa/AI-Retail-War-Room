@@ -6,6 +6,7 @@ const CommandPalette = (() => {
   const ROUTES = [
     { icon: 'bi-grid-1x2-fill', label: 'Executive Dashboard (3D Bento)', path: '/dashboard', keys: ['dashboard', 'overview', 'kpi', 'bento', 'globe', '3d'] },
     { icon: 'bi-chat-square-dots-fill', label: 'Ask Data AI (Talk to Your Data)', path: '/chat', keys: ['chat', 'nlp', 'ask', 'ai', 'copilot', 'rag', 'query'] },
+    { icon: 'bi-database-fill-gear', label: 'BI Data Studio (SQL & Text-to-SQL)', path: '/bi-studio', keys: ['sql', 'bi', 'studio', 'query', 'database', 'text-to-sql', 'tables'] },
     { icon: 'bi-sliders2', label: 'What-If Modeler (Simulation Lab)', path: '/scenario', keys: ['scenario', 'whatif', 'simulate', 'price', 'elasticity', 'margin'] },
     { icon: 'bi-speedometer2', label: 'Customer Intelligence (RFM)', path: '/customer', keys: ['customer', 'rfm', 'cohort', 'dna', 'buyers'] },
     { icon: 'bi-diagram-3-fill', label: 'Causal Driver Analysis', path: '/insights', keys: ['insights', 'causal', 'analysis', 'drivers'] },

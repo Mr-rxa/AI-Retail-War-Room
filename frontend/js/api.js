@@ -58,9 +58,47 @@ const API = (() => {
     return json.data;
   }
 
+  // BI Studio API Calls
+  async function getBiSchema() {
+    const sessionId = localStorage.getItem('airw_session_id');
+    const headers = { 'Accept': 'application/json' };
+    if (sessionId) headers['X-Session-ID'] = sessionId;
+    const res = await fetch(`${CONFIG.API_BASE_URL}/bi/schema`, { headers });
+    return res.json();
+  }
+
+  async function runBiQuery(sql, maxRows = 1000) {
+    const sessionId = localStorage.getItem('airw_session_id');
+    const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
+    if (sessionId) headers['X-Session-ID'] = sessionId;
+    const res = await fetch(`${CONFIG.API_BASE_URL}/bi/query`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ sql, max_rows: maxRows })
+    });
+    return res.json();
+  }
+
+  async function textToSql(prompt) {
+    const sessionId = localStorage.getItem('airw_session_id');
+    const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
+    if (sessionId) headers['X-Session-ID'] = sessionId;
+    const res = await fetch(`${CONFIG.API_BASE_URL}/bi/text-to-sql`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ prompt })
+    });
+    return res.json();
+  }
+
+  async function getBiTemplates() {
+    const res = await fetch(`${CONFIG.API_BASE_URL}/bi/templates`);
+    return res.json();
+  }
 
   return { 
     getDashboard, getAnalyticsSummary, getForecast, getAdvisorReport, 
-    getAnomalies, getDataSourceStatus, clearCustomData 
+    getAnomalies, getDataSourceStatus, clearCustomData,
+    getBiSchema, runBiQuery, textToSql, getBiTemplates
   };
 })();

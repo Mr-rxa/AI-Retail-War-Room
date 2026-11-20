@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Customer Intelligence — AI Retail War Room</title>
+<title>Customer Intelligence & Loyalty 360 — AI Retail War Room</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link rel="stylesheet" href="../css/main.css">
 <link rel="stylesheet" href="../css/components.css">
@@ -14,8 +14,69 @@
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 
-<!-- Lenis Smooth Scroll -->
-<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+<style>
+.cohort-table th, .cohort-table td {
+  padding: 8px 10px;
+  font-size: 11.5px;
+  text-align: center;
+}
+.cohort-table td.cohort-label {
+  text-align: left;
+  font-weight: 600;
+}
+.cohort-cell {
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  transition: transform 0.15s ease;
+}
+.cohort-cell:hover {
+  transform: scale(1.08);
+}
+.loyalty-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.churn-bar-wrap {
+  width: 90px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+.churn-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+}
+.filter-pills-bar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.filter-pill-btn {
+  padding: 5px 12px;
+  font-size: 11.5px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.filter-pill-btn.active, .filter-pill-btn:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+</style>
 </head>
 <body data-page="customer">
 
@@ -33,6 +94,7 @@
     <main class="content">
       <div id="errorBanner" class="error-banner"></div>
 
+      <!-- KPI Grid -->
       <div class="kpi-grid stagger-grid" style="margin-bottom:18px;">
         <div class="kpi-card skeu-card tilt-card">
           <div class="kpi-top"><span class="kpi-label embossed-label">Customer Health Index</span><div class="kpi-icon terracotta"><i class="bi bi-heart-pulse-fill"></i></div></div>
@@ -56,6 +118,7 @@
         </div>
       </div>
 
+      <!-- Section: Macro Cohort & Loyalty Mix -->
       <div class="max-section-head reveal-up"><h2>Customer Cohort &amp; Loyalty Trends</h2></div>
       <div class="row-2-1" style="margin-bottom:24px;">
         <div class="panel reveal-left">
@@ -71,6 +134,86 @@
         </div>
       </div>
 
+      <!-- Section: Customer 360 Directory & Churn Predictor -->
+      <div class="max-section-head reveal-up">
+        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;flex-wrap:wrap;gap:10px;">
+          <div>
+            <h2>Customer 360 &amp; Loyalty Predictor</h2>
+            <div style="font-size:12.5px;color:var(--text-muted);margin-top:2px;">Individual customer RFM tiers, predictive churn risk likelihood, and estimated lifetime value (LTV).</div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-outline btn-push" id="exportCustomerCsvBtn"><i class="bi bi-file-earmark-spreadsheet"></i>Export CRM Segment (CSV)</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel reveal-up" style="margin-bottom:24px;">
+        <div class="panel-head" style="padding:12px 18px;gap:12px;flex-wrap:wrap;">
+          <div class="filter-pills-bar" id="tierFilterBar">
+            <button class="filter-pill-btn active" data-filter="ALL">All Profiles</button>
+            <button class="filter-pill-btn" data-filter="LOYAL"><i class="bi bi-shield-check" style="color:#10B981;"></i> Champions &amp; Loyal</button>
+            <button class="filter-pill-btn" data-filter="POTENTIAL"><i class="bi bi-stars" style="color:#6366F1;"></i> Potential Loyalists</button>
+            <button class="filter-pill-btn" data-filter="CHURN_RISK"><i class="bi bi-exclamation-triangle" style="color:#EF4444;"></i> High Churn Risk (&gt;70%)</button>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+            <div class="input-search-wrap" style="position:relative;width:220px;">
+              <i class="bi bi-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:12px;"></i>
+              <input type="text" id="customerSearchInput" placeholder="Search customer ID or state..." style="width:100%;padding:6px 10px 6px 30px;font-size:12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg-surface);color:var(--text);outline:none;">
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-body tight" style="overflow-x:auto;max-height:420px;">
+          <table class="data-table" id="customerDirectoryTable">
+            <thead>
+              <tr>
+                <th>Customer ID</th>
+                <th>Territory</th>
+                <th class="num">Orders</th>
+                <th class="num">Total Spend</th>
+                <th class="num">Days Inactive</th>
+                <th>Loyalty Tier</th>
+                <th>Churn Risk Likelihood</th>
+                <th class="num">Est. LTV</th>
+              </tr>
+            </thead>
+            <tbody id="customerDirectoryBody">
+              <tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-muted);"><i class="bi bi-cpu spin"></i> Computing Customer 360 records...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Section: Cohort Retention Heatmap Matrix -->
+      <div class="max-section-head reveal-up">
+        <h2>Multi-Month Cohort Retention Matrix</h2>
+        <div style="font-size:12.5px;color:var(--text-muted);margin-top:2px;">Percentage of acquired customers returning to purchase in subsequent operating months.</div>
+      </div>
+
+      <div class="panel reveal-up" style="margin-bottom:24px;">
+        <div class="panel-body tight" style="overflow-x:auto;">
+          <table class="data-table cohort-table" id="cohortMatrixTable">
+            <thead>
+              <tr>
+                <th style="text-align:left;">Acquisition Cohort</th>
+                <th>Cohort Size</th>
+                <th>M0 (Base)</th>
+                <th>M1 (+30d)</th>
+                <th>M2 (+60d)</th>
+                <th>M3 (+90d)</th>
+                <th>M4 (+120d)</th>
+                <th>M5 (+150d)</th>
+                <th>M6 (+180d)</th>
+              </tr>
+            </thead>
+            <tbody id="cohortMatrixBody">
+              <tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-muted);"><i class="bi bi-cpu spin"></i> Assembling retention heatmap...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Section: Regional Risk Distribution -->
       <div class="max-section-head reveal-up"><h2>Regional Risk Distribution</h2></div>
       <div class="row-1-1" style="margin-bottom:24px;">
         <div class="panel reveal-left">
@@ -88,6 +231,7 @@
         </div>
       </div>
 
+      <!-- Section: Retention Playbook -->
       <div class="max-section-head reveal-up"><h2>Retention Playbook</h2></div>
       <div class="panel reveal-up">
         <div class="panel-body"><div class="customer-rec-grid" id="customerRecommendations"></div></div>
@@ -107,8 +251,6 @@
 <script src="../js/charts.js"></script>
 <script src="../js/customer.js"></script>
 <script src="../js/motion.js"></script>
-<script src="../js/particles.js"></script>
-<script src="../js/preloader.js"></script>
 <script src="../js/command.js"></script>
 <script src="../js/exporter.js"></script>
 <script src="../js/presentation.js"></script>

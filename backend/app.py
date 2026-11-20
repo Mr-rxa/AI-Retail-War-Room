@@ -14,6 +14,7 @@ from backend.controllers.forecast_controller import forecast_controller
 from backend.controllers.upload_controller import upload_controller
 from backend.controllers.chat_controller import chat_controller
 from backend.controllers.scenario_controller import scenario_controller
+from backend.controllers.bi_controller import bi_bp
 from backend.middleware.error_handler import register_error_handlers
 from backend.utils.cache import cache
 from flasgger import Swagger
@@ -77,6 +78,10 @@ app.register_blueprint(
     url_prefix="/api/scenario"
 )
 
+app.register_blueprint(
+    bi_bp
+)
+
 @app.route("/")
 def index():
     return send_from_directory(FRONTEND_DIR, "index.html")
@@ -135,6 +140,13 @@ def insights():
 @app.route("/pages/upload.html")
 def upload_page():
     return send_from_directory(PAGES_DIR, "upload.html")
+
+@app.route("/bi-studio")
+@app.route("/bi_studio")
+@app.route("/bi_studio.html")
+@app.route("/pages/bi_studio.html")
+def bi_studio_page():
+    return send_from_directory(PAGES_DIR, "bi_studio.html")
 
 
 @app.route("/present")

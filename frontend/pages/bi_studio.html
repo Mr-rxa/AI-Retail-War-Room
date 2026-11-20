@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BI Data Studio — AI Retail War Room</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link rel="stylesheet" href="../css/main.css">
+<link rel="stylesheet" href="../css/components.css">
+<link rel="stylesheet" href="../css/effects.css">
+
+<!-- GSAP + ScrollTrigger -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
+<style>
+.bi-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+@media (max-width: 1024px) {
+  .bi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.sql-editor-wrap {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.sql-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.sql-textarea {
+  width: 100%;
+  min-height: 180px;
+  padding: 14px;
+  background: transparent;
+  color: var(--text);
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  border: none;
+  outline: none;
+  resize: vertical;
+}
+.schema-panel {
+  max-height: 290px;
+  overflow-y: auto;
+  padding: 8px 12px;
+}
+.schema-table-item {
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  overflow: hidden;
+}
+.schema-table-header {
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.02);
+}
+.schema-col-list {
+  padding: 6px 12px 8px;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-card);
+}
+.schema-col-item {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-muted);
+  font-family: monospace;
+}
+.schema-col-item span:first-child {
+  color: var(--text);
+  cursor: pointer;
+}
+.schema-col-item span:first-child:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.ai-copilot-card {
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, rgba(168, 85, 247, 0.06) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: var(--radius-md);
+  margin-bottom: 18px;
+}
+.ai-copilot-input-wrap {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.ai-copilot-input {
+  flex: 1;
+  padding: 10px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+}
+.ai-copilot-input:focus {
+  border-color: #38BDF8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+}
+.query-meta-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.view-tabs button {
+  padding: 4px 10px;
+  font-size: 11px;
+  border-radius: var(--radius-sm);
+}
+.view-tabs button.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+</style>
+</head>
+<body data-page="bi_studio">
+
+<div class="blob-wrap">
+  <div class="blob blob-sage"></div>
+  <div class="blob blob-amber"></div>
+</div>
+
+<div class="app-shell">
+  <div id="sidebarMount"></div>
+
+  <div class="main-col">
+    <div id="navbarMount"></div>
+
+    <main class="content">
+      <div id="errorBanner" class="error-banner"></div>
+
+      <!-- KPI Ribbon for In-Memory Database -->
+      <div class="kpi-grid stagger-grid" style="margin-bottom:18px;">
+        <div class="kpi-card skeu-card tilt-card">
+          <div class="kpi-top"><span class="kpi-label embossed-label">BI Engine Status</span><div class="kpi-icon terracotta"><i class="bi bi-hdd-network-fill"></i></div></div>
+          <div class="kpi-value" id="biEngineStatus">Active</div>
+          <span class="kpi-delta up" id="biEngineType">SQLite In-Memory</span>
+        </div>
+        <div class="kpi-card skeu-card tilt-card">
+          <div class="kpi-top"><span class="kpi-label embossed-label">Available Tables</span><div class="kpi-icon sage"><i class="bi bi-table"></i></div></div>
+          <div class="kpi-value" id="biTableCount">6</div>
+          <span class="kpi-delta up">Indexed Relational</span>
+        </div>
+        <div class="kpi-card skeu-card tilt-card">
+          <div class="kpi-top"><span class="kpi-label embossed-label">Query Latency</span><div class="kpi-icon amber"><i class="bi bi-lightning-charge-fill"></i></div></div>
+          <div class="kpi-value" id="biQueryLatency">0 ms</div>
+          <span class="kpi-delta up">Sub-10ms Target</span>
+        </div>
+        <div class="kpi-card skeu-card tilt-card">
+          <div class="kpi-top"><span class="kpi-label embossed-label">Result Set Capacity</span><div class="kpi-icon mauve"><i class="bi bi-database-check"></i></div></div>
+          <div class="kpi-value">1,000</div>
+          <span class="kpi-delta up">Rows per Query</span>
+        </div>
+      </div>
+
+      <!-- AI Natural Language to SQL Copilot -->
+      <div class="ai-copilot-card reveal-up">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <i class="bi bi-stars" style="color:#38BDF8;font-size:18px;"></i>
+            <strong style="font-size:14px;color:var(--text);">AI Text-to-SQL Copilot (Gemini Decision Intelligence)</strong>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="font-size:11.5px;color:var(--text-muted);">Quick Templates:</span>
+            <select id="sqlTemplateSelect" class="input-select" style="font-size:11.5px;padding:4px 8px;width:auto;">
+              <option value="">-- Choose BI Template --</option>
+            </select>
+          </div>
+        </div>
+        <div class="ai-copilot-input-wrap">
+          <input type="text" id="copilotInput" class="ai-copilot-input" placeholder="Ask anything in English: e.g., 'What are the top 5 states by total revenue with average order price?'">
+          <button class="btn-primary" id="copilotGenerateBtn" style="background:#38BDF8;border-color:#38BDF8;"><i class="bi bi-cpu-fill"></i>Generate SQL</button>
+        </div>
+      </div>
+
+      <!-- Interactive SQL Editor & Schema Explorer -->
+      <div class="bi-grid reveal-up">
+        <!-- Editor Box -->
+        <div class="sql-editor-wrap">
+          <div class="sql-toolbar">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <i class="bi bi-terminal-fill" style="color:var(--accent);"></i>
+              <strong style="font-size:12.5px;">SQL Query Editor</strong>
+              <span class="badge info" style="font-size:10px;">Read-Only Mode</span>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <button class="btn-outline btn-push" id="formatSqlBtn" style="font-size:11px;padding:4px 8px;" title="Format Query"><i class="bi bi-magic"></i>Format</button>
+              <button class="btn-outline btn-push" id="clearSqlBtn" style="font-size:11px;padding:4px 8px;" title="Clear Editor"><i class="bi bi-trash"></i>Clear</button>
+              <button class="btn-primary btn-push" id="runSqlBtn" style="font-size:11px;padding:4px 12px;"><i class="bi bi-play-fill"></i>Run Query (⌘Enter)</button>
+            </div>
+          </div>
+          <textarea id="sqlTextarea" class="sql-textarea" spellcheck="false">SELECT 
+    product_category,
+    COUNT(order_id) AS total_orders,
+    ROUND(SUM(price), 2) AS gross_revenue,
+    ROUND(AVG(price), 2) AS average_ticket
+FROM v_retail_sales
+GROUP BY product_category
+ORDER BY gross_revenue DESC
+LIMIT 10;</textarea>
+        </div>
+
+        <!-- Schema Tree -->
+        <div class="panel" style="margin:0;">
+          <div class="panel-head" style="padding:10px 14px;">
+            <h3 style="font-size:13px;"><i class="bi bi-diagram-3"></i> Database Catalog</h3>
+          </div>
+          <div class="schema-panel" id="schemaContainer">
+            <div style="color:var(--text-muted);font-size:11.5px;text-align:center;padding:24px 0;"><i class="bi bi-cpu spin"></i> Loading schema...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Query Results & Visualizer -->
+      <div class="panel reveal-up" style="margin-bottom:24px;">
+        <div class="query-meta-bar">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span id="queryStatusBadge" class="badge success"><i class="bi bi-check-circle-fill"></i> Ready</span>
+            <span id="queryExecInfo">Execution: 0 ms • Rows: 0</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="view-tabs" style="display:flex;gap:4px;">
+              <button class="btn-outline active" id="viewTableBtn"><i class="bi bi-table"></i> Table Grid</button>
+              <button class="btn-outline" id="viewChartBtn"><i class="bi bi-bar-chart-fill"></i> Visualization</button>
+            </div>
+            <div style="height:16px;width:1px;background:var(--border);"></div>
+            <button class="btn-outline" id="exportCsvBtn" title="Export Result as CSV"><i class="bi bi-file-earmark-spreadsheet"></i> CSV</button>
+            <button class="btn-outline" id="exportJsonBtn" title="Export Result as JSON"><i class="bi bi-filetype-json"></i> JSON</button>
+          </div>
+        </div>
+
+        <div class="panel-body tight" id="resultsTableWrap" style="overflow-x:auto;max-height:450px;">
+          <table class="data-table" id="biDataTable">
+            <thead id="biTableHead"><tr><th>Run a query to view results</th></tr></thead>
+            <tbody id="biTableBody"><tr><td style="color:var(--text-muted);padding:24px 20px;">No active result set. Press Run Query or ask the AI Copilot above.</td></tr></tbody>
+          </table>
+        </div>
+
+        <div class="panel-body" id="resultsChartWrap" style="display:none;height:350px;position:relative;">
+          <canvas id="biChartCanvas"></canvas>
+        </div>
+      </div>
+
+      <div id="footerMount"></div>
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/theme.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/exporter.js"></script>
+<script src="../js/bi_studio.js"></script>
+<script src="../js/command.js"></script>
+<script src="../js/presentation.js"></script>
+</body>
+</html>
