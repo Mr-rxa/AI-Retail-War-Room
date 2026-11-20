@@ -82,10 +82,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     selectedFile = file;
     selectedFileName.textContent = file.name;
-    selectedFileSize.textContent = `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+    const isLarge = file.size > 3.8 * 1024 * 1024;
+    selectedFileSize.textContent = `${(file.size / (1024 * 1024)).toFixed(2)} MB${isLarge ? ' • ⚡ Auto-Sampling Active (<4MB Serverless)' : ''}`;
     dropZone.style.display = 'none';
     selectedFileInfo.style.display = 'flex';
     nextStepBtn.disabled = false;
+  }
+
+  // Get slice of file ending cleanly at a newline for serverless body limits (< 4MB)
+  async function getFileSampleBlob(file, maxBytes = 3.5 * 1024 * 1024) {
+    if (!file || file.size <= maxBytes) return file;
+    const chunk = file.slice(0, maxBytes);
+    const text = await chunk.text();
+    const lastNewline = text.lastIndexOf('\n');
+    const cleanText = lastNewline > 0 ? text.slice(0, lastNewline) : text;
+    return new File([cleanText], file.name, { type: file.type || 'text/csv' });
+  }
+
+  // Safely parse JSON or produce clear error when receiving plain text/HTML (e.g. Vercel 413)
+  async function safeFetchJson(url, options) {
+    const res = await fetch(url, options);
+    const text = await res.text();
+    let json;
+    try {
+      json = JSON.parse(text);
+    } catch (e) {
+      if (res.status === 413 || text.includes('Request Entity Too Large') || text.includes('Payload Too Large')) {
+        throw new Error('File payload exceeds serverless limit (4.5 MB on Vercel). Auto-sampling is adjusting the slice to ensure processing.');
+      }
+      throw new Error(`Server returned HTTP ${res.status}: ${text.slice(0, 120)}`);
+    }
+    return { ok: res.ok, status: res.status, json };
   }
 
 
@@ -167,16 +194,18 @@ document.addEventListener('DOMContentLoaded', () => {
       nextStepBtn.innerHTML = `<i class="bi bi-hourglass-split"></i> Analyzing...`;
 
       try {
+        // If file > 3.5 MB, sample cleanly at newline boundary to stay within Vercel's 4.5 MB serverless limit
+        const fileToUpload = await getFileSampleBlob(selectedFile, 3.5 * 1024 * 1024);
+
         const formData = new FormData();
-        formData.append('file', selectedFile);
+        formData.append('file', fileToUpload);
         
-        const res = await fetch(`${CONFIG.API_BASE_URL}/upload/analyze`, {
+        const { ok, json } = await safeFetchJson(`${CONFIG.API_BASE_URL}/upload/analyze`, {
           method: 'POST',
           body: formData
         });
-        const json = await res.json();
         
-        if (!res.ok || !json.success) {
+        if (!ok || !json.success) {
           throw new Error(json.message || 'Analysis failed');
         }
 
@@ -264,22 +293,24 @@ document.addEventListener('DOMContentLoaded', () => {
     launchBtn.innerHTML = `<i class="bi bi-hourglass-split"></i> Processing & Launching...`;
 
     try {
+      // If file > 3.5 MB, slice cleanly at newline boundary to stay within Vercel's 4.5 MB serverless limit
+      const fileToUpload = await getFileSampleBlob(selectedFile, 3.5 * 1024 * 1024);
+
       const formData = new FormData();
-      formData.append('file', selectedFile);
+      formData.append('file', fileToUpload);
       formData.append('mapping', JSON.stringify(confirmedMapping));
       formData.append('currency', JSON.stringify(selectedCurrency));
 
       const session_id = localStorage.getItem('airw_session_id') || `session_${Date.now()}`;
       localStorage.setItem('airw_session_id', session_id);
 
-      const res = await fetch(`${CONFIG.API_BASE_URL}/upload/confirm`, {
+      const { ok, json } = await safeFetchJson(`${CONFIG.API_BASE_URL}/upload/confirm`, {
         method: 'POST',
         headers: { 'X-Session-ID': session_id },
         body: formData
       });
 
-      const json = await res.json();
-      if (!res.ok || !json.success) {
+      if (!ok || !json.success) {
         throw new Error(json.message || 'Confirmation failed');
       }
 
