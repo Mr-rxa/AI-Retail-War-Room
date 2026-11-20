@@ -6,6 +6,17 @@ from backend.services.scenario_service import simulate_scenario
 
 scenario_controller = Blueprint("scenario_controller", __name__)
 
+@scenario_controller.route("/baseline", methods=["GET"])
+def handle_baseline():
+    session_id = request.headers.get("X-Session-ID") or request.cookies.get("airw_session_id")
+    filters = {
+        "year": request.args.get("year"),
+        "state": request.args.get("state"),
+        "payment": request.args.get("payment")
+    }
+    result = simulate_scenario({}, session_id=session_id, filters=filters)
+    return jsonify(result)
+
 @scenario_controller.route("/simulate", methods=["POST"])
 def handle_simulation():
     body = request.get_json(silent=True) or {}

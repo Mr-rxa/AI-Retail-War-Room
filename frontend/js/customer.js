@@ -37,7 +37,8 @@
     Utils.showLoader(Utils.qs('main.content'), 'Computing Customer RFM Segments...');
 
     try {
-      const analytics = await API.getAnalyticsSummary();
+      const filters = Utils.getGlobalFilters();
+      const analytics = await API.getAnalyticsSummary(filters);
       lastAnalytics = analytics;
       Utils.setCache('customer', analytics);
       if (Utils.qs('#errorBanner')) Utils.qs('#errorBanner').style.display = 'none';

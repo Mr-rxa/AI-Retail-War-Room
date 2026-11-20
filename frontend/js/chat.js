@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Session-ID': sessionStorage.getItem('airw_session_id') || ''
+          'X-Session-ID': localStorage.getItem('airw_session_id') || sessionStorage.getItem('airw_session_id') || ''
         },
         body: JSON.stringify({ query, ...filters })
       });
@@ -189,6 +189,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function formatMarkdown(text) {
     if (!text) return '';
+    if (typeof marked !== 'undefined') {
+      try {
+        return marked.parse(text);
+      } catch (e) {}
+    }
     let formatted = escapeHtml(text);
     formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');

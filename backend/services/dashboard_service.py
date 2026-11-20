@@ -11,14 +11,14 @@ from backend.engines import csv_engine
 
 from backend.engines.demo_data import get_demo_dashboard
 
-def get_dashboard(filters=None, session_id=None):
+def get_dashboard(filters=None, session_id=None, skip_forecast=False):
     if filters is None:
         filters = {}
 
     from backend.services.analytics_service import analytics_summary
 
     if session_id and session_store.has(session_id):
-        analytics = analytics_summary(session_id, filters)
+        analytics = analytics_summary(session_id, filters, skip_forecast=skip_forecast)
         kpis = csv_engine.fetch_kpis(session_id, filters)
         dashboard = {
             "kpis": kpis,
@@ -37,9 +37,9 @@ def get_dashboard(filters=None, session_id=None):
         kpis = fetch_kpis(filters)
         if not kpis or not kpis.get("revenue") or kpis.get("revenue") == 0:
             dashboard = get_demo_dashboard(filters)
-            dashboard["analytics"] = analytics_summary(filters=filters)
+            dashboard["analytics"] = analytics_summary(filters=filters, skip_forecast=skip_forecast)
         else:
-            analytics = analytics_summary(filters=filters)
+            analytics = analytics_summary(filters=filters, skip_forecast=skip_forecast)
             dashboard = {
                 "kpis": kpis,
                 "monthly_sales": fetch_monthly_sales(filters),

@@ -70,7 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function handleFileSelect(file) {
-    if (!file.name.endsWith('.csv') && !file.name.endsWith('.txt')) {
+    const lowerName = (file.name || '').toLowerCase();
+    if (!lowerName.endsWith('.csv') && !lowerName.endsWith('.txt')) {
       alert('Please select a valid .csv file');
       return;
     }

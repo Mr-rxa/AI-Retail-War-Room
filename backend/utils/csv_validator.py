@@ -359,7 +359,7 @@ def analyse_upload(file_storage) -> dict:
         try:
             dates = pd.to_datetime(df_sample[date_col], errors="coerce").dropna()
             if not dates.empty:
-                date_range = f"{dates.min().strftime('%Y-%m-%d')} → {dates.max().strftime('%Y-%m-%d')}"
+                date_range = f"{dates.min().strftime('%Y-%m-%d')} to {dates.max().strftime('%Y-%m-%d')}"
         except Exception:
             pass
 

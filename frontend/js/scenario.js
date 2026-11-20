@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Session-ID': sessionStorage.getItem('airw_session_id') || ''
+          'X-Session-ID': localStorage.getItem('airw_session_id') || sessionStorage.getItem('airw_session_id') || ''
         },
         body: JSON.stringify({ ...params, ...filters })
       });

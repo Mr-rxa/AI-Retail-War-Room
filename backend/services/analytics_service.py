@@ -29,9 +29,9 @@ from backend.engines import session_store
 from backend.engines import csv_engine
 from backend.engines.demo_data import get_demo_analytics
 
-def analytics_summary(session_id=None, filters=None):
+def analytics_summary(session_id=None, filters=None, skip_forecast=False):
     # ── fast path: return cached bundle when session exists and no filters ──
-    if session_id and session_store.has(session_id) and not filters:
+    if session_id and session_store.has(session_id) and not filters and not skip_forecast:
         cached = session_store.get_analytics_cache(session_id)
         if cached is not None:
             return cached
@@ -39,7 +39,7 @@ def analytics_summary(session_id=None, filters=None):
     if session_id and session_store.has(session_id):
         analytics = csv_engine.compute_analytics(session_id, filters=filters)
         history_data = analytics.get("forecast_history")
-        forecast = forecast_sales(history_data=history_data)
+        forecast = {"summary": {"trend": "Stable", "change_percent": 0.0}} if skip_forecast else forecast_sales(history_data=history_data)
         entry = session_store.get(session_id)
         currency_info = entry.get("currency") if entry else None
     else:
@@ -49,7 +49,7 @@ def analytics_summary(session_id=None, filters=None):
             analytics = get_demo_analytics()
             if filters and any(filters.values()):
                 analytics = filter_demo_analytics(analytics, filters)
-            forecast = forecast_sales(history_data=analytics.get("forecast_history"))
+            forecast = {"summary": {"trend": "Stable", "change_percent": 0.0}} if skip_forecast else forecast_sales(history_data=analytics.get("forecast_history"))
         else:
             analytics = {
                 "revenue_growth": db_growth,
@@ -71,7 +71,7 @@ def analytics_summary(session_id=None, filters=None):
                 "avg_days_between_orders": average_days_between_orders(),
                 "risky_regions": risky_customer_regions()
             }
-            forecast = forecast_sales()
+            forecast = {"summary": {"trend": "Stable", "change_percent": 0.0}} if skip_forecast else forecast_sales()
         currency_info = None
 
     analytics["forecast_summary"] = forecast.get(

@@ -12,7 +12,7 @@ const Utils = (() => {
       const raw = localStorage.getItem('airw_currency');
       if (raw) return JSON.parse(raw);
     } catch (e) {}
-    return { symbol: 'R$', code: 'BRL', position: 'before' };
+    return { symbol: '$', code: 'USD', position: 'before' };
   }
 
   function formatCurrency(value, { compact = false } = {}) {

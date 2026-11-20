@@ -92,7 +92,7 @@ def build_normalised_df(raw_df: pd.DataFrame, mapping: dict) -> pd.DataFrame:
             if logical_field in ("payment_value", "item_price"):
                 norm_df[logical_field] = pd.to_numeric(raw_df[csv_col], errors="coerce").fillna(0.0).astype("float32")
             elif logical_field in ("order_date", "delivery_date"):
-                norm_df[logical_field] = pd.to_datetime(raw_df[csv_col], errors="coerce")
+                norm_df[logical_field] = pd.to_datetime(raw_df[csv_col], format="mixed", dayfirst=True, errors="coerce")
             else:
                 norm_df[logical_field] = raw_df[csv_col].astype("category") if logical_field in ("region", "payment_type", "product_category") else raw_df[csv_col].astype(str)
 
