@@ -1,48 +1,168 @@
 <aside class="sidebar">
+  <!-- Brand Header -->
   <div class="sidebar-brand">
-    <div class="mark">RW</div>
-    <div>
-      <div class="name">AI Retail War Room</div>
-      <div class="sub">Executive Decision Intelligence</div>
+    <div class="sidebar-brand-mark">
+      <span>RW</span>
+    </div>
+    <div class="sidebar-brand-text">
+      <div class="sidebar-brand-title">
+        <span>AI Retail War Room</span>
+        <span class="sidebar-pulse-dot" title="Live System Online"></span>
+      </div>
+      <div class="sidebar-brand-sub">EXECUTIVE DECISION INTELLIGENCE</div>
     </div>
   </div>
 
-  <div class="sidebar-section-label">Data Operations</div>
-  <ul class="sidebar-nav">
-    <li><a href="/upload" data-nav="upload"><i class="bi bi-cloud-upload-fill nav-icon-3d"></i>Data Import (100MB)</a></li>
-  </ul>
-
-  <div class="sidebar-section-label">AI Neural Operations</div>
-  <ul class="sidebar-nav">
-    <li><a href="/chat" data-nav="chat"><i class="bi bi-chat-square-dots-fill nav-icon-3d" style="color:var(--accent-2);"></i>Ask Data AI <span class="pill" style="margin-left:auto;padding:2px 7px;font-size:9.5px;background:var(--accent-2-soft);color:var(--accent-2);border-color:transparent;">NLP RAG</span></a></li>
-    <li><a href="/bi-studio" data-nav="bi_studio"><i class="bi bi-database-fill-gear nav-icon-3d" style="color:#38BDF8;"></i>BI Data Studio <span class="pill" style="margin-left:auto;padding:2px 7px;font-size:9.5px;background:rgba(56,189,248,0.15);color:#38BDF8;border-color:transparent;">SQL BI</span></a></li>
-    <li><a href="/scenario" data-nav="scenario"><i class="bi bi-sliders2 nav-icon-3d" style="color:var(--accent-amber);"></i>What-If Modeler <span class="pill" style="margin-left:auto;padding:2px 7px;font-size:9.5px;background:var(--accent-amber-soft);color:var(--accent-amber);border-color:transparent;">Simulate</span></a></li>
-  </ul>
-
-  <div class="sidebar-section-label">Decision Intelligence</div>
-  <ul class="sidebar-nav">
-    <li><a href="/dashboard" data-nav="dashboard"><i class="bi bi-grid-1x2-fill nav-icon-3d"></i>Executive Dashboard</a></li>
-    <li><a href="/customer" data-nav="customer"><i class="bi bi-speedometer2 nav-icon-3d"></i>Customer Intelligence</a></li>
-    <li><a href="/insights" data-nav="insights"><i class="bi bi-diagram-3-fill nav-icon-3d"></i>Causal Analysis</a></li>
-    <li><a href="/advisor" data-nav="advisor"><i class="bi bi-cpu-fill nav-icon-3d"></i>AI Advisor Lab</a></li>
-    <li><a href="/anomaly" data-nav="anomaly"><i class="bi bi-shield-exclamation nav-icon-3d"></i>Anomaly Detection</a></li>
-    <li><a href="/forecast" data-nav="forecast"><i class="bi bi-graph-up-arrow nav-icon-3d"></i>Sales & Forecast (Prophet)</a></li>
-  </ul>
-
-  <div class="sidebar-footer">
-    <div class="data-source-badge" id="sidebarDataSourceBadge" style="margin-bottom: 12px; width: 100%; justify-content: space-between; display: flex; align-items: center;">
-      <span style="display: flex; align-items: center; gap: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-        <span class="dot" id="dataSourceDot" style="width:7px;height:7px;border-radius:50%;background:var(--accent-2);display:inline-block;"></span>
-        <span id="dataSourceName" style="font-size: 11px; overflow: hidden; text-overflow: ellipsis; color: var(--text-muted); font-weight: 600;">Retail Dataset</span>
-      </span>
-      <button id="clearDataBtn" title="Reset to Demo Data" style="display: none; background: none; border: none; color: var(--text-muted); cursor: pointer;"><i class="bi bi-x-circle-fill"></i></button>
-    </div>
-    <div class="sidebar-user">
-      <div class="avatar"><i class="bi bi-person-fill"></i></div>
-      <div>
-        <div class="who">Retail Executive</div>
-        <div class="role">Strategy & Ops</div>
+  <!-- Section 1: DATA OPERATIONS -->
+  <div class="sidebar-section-header">
+    <span class="sidebar-section-label">DATA OPERATIONS</span>
+    <span class="sidebar-section-badge ready">READY</span>
+  </div>
+  <a href="/upload" data-nav="upload" class="sidebar-data-card" title="Upload Custom Dataset (Up to 100MB)">
+    <div class="data-card-top">
+      <div class="data-card-info">
+        <i class="bi bi-cloud-arrow-up-fill data-card-icon"></i>
+        <span class="data-card-title">Data Import (100MB)</span>
       </div>
+      <span class="data-card-pct">68%</span>
+    </div>
+    <div class="data-card-progress">
+      <div class="data-card-progress-bar" style="width: 68%;"></div>
+    </div>
+    <div class="data-card-bottom">
+      <span class="data-card-status"><span class="dot-clean"></span> Ready • 99.8% Clean</span>
+      <span class="data-card-spec">100MB ETL</span>
+    </div>
+  </a>
+
+  <!-- Section 2: AI NEURAL OPERATIONS -->
+  <div class="sidebar-section-header">
+    <span class="sidebar-section-label">AI NEURAL OPERATIONS</span>
+  </div>
+  <ul class="sidebar-nav">
+    <li>
+      <a href="/chat" data-nav="chat">
+        <div class="nav-item-left">
+          <i class="bi bi-chat-square-dots-fill icon-violet"></i>
+          <span>Ask Data AI</span>
+        </div>
+        <span class="nav-pill pill-violet">NLP RAG</span>
+      </a>
+    </li>
+    <li>
+      <a href="/bi-studio" data-nav="bi_studio">
+        <div class="nav-item-left">
+          <i class="bi bi-terminal-fill icon-cyan"></i>
+          <span>BI Data Studio</span>
+        </div>
+        <div class="nav-pills-wrap">
+          <span class="nav-latency">12ms</span>
+          <span class="nav-pill pill-cyan">SQL BI</span>
+        </div>
+      </a>
+    </li>
+    <li>
+      <a href="/scenario" data-nav="scenario">
+        <div class="nav-item-left">
+          <i class="bi bi-sliders2 icon-amber"></i>
+          <span>What-If Modeler</span>
+        </div>
+        <span class="nav-pill pill-amber">Simulate</span>
+      </a>
+    </li>
+  </ul>
+
+  <!-- Section 3: DECISION INTELLIGENCE -->
+  <div class="sidebar-section-header">
+    <span class="sidebar-section-label">DECISION INTELLIGENCE</span>
+  </div>
+  <ul class="sidebar-nav">
+    <li>
+      <a href="/dashboard" data-nav="dashboard">
+        <div class="nav-item-left">
+          <i class="bi bi-grid-1x2-fill icon-indigo"></i>
+          <span>Executive Dashboard</span>
+        </div>
+        <span class="nav-active-dot"></span>
+      </a>
+    </li>
+    <li>
+      <a href="/customer" data-nav="customer">
+        <div class="nav-item-left">
+          <i class="bi bi-speedometer2 icon-emerald"></i>
+          <span>Customer Intelligence</span>
+        </div>
+        <span class="nav-pill pill-emerald">+118%</span>
+      </a>
+    </li>
+    <li>
+      <a href="/insights" data-nav="insights">
+        <div class="nav-item-left">
+          <i class="bi bi-diagram-3-fill icon-purple"></i>
+          <span>Causal Analysis</span>
+        </div>
+      </a>
+    </li>
+    <li>
+      <a href="/advisor" data-nav="advisor">
+        <div class="nav-item-left">
+          <i class="bi bi-cpu-fill icon-indigo"></i>
+          <span>AI Advisor Lab</span>
+        </div>
+        <span class="nav-pill pill-indigo">GEN AI</span>
+      </a>
+    </li>
+    <li>
+      <a href="/anomaly" data-nav="anomaly">
+        <div class="nav-item-left">
+          <i class="bi bi-shield-exclamation icon-rose"></i>
+          <span>Anomaly Detection</span>
+        </div>
+        <span class="radar-dot-wrap" title="Real-time Surveillance">
+          <span class="radar-ping"></span>
+          <span class="radar-dot"></span>
+        </span>
+      </a>
+    </li>
+    <li>
+      <a href="/forecast" data-nav="forecast">
+        <div class="nav-item-left">
+          <i class="bi bi-graph-up-arrow icon-blue"></i>
+          <span>Sales & Forecast (Prophet)</span>
+        </div>
+      </a>
+    </li>
+  </ul>
+
+  <!-- Sidebar Footer: Telemetry & Executive Profile -->
+  <div class="sidebar-footer">
+    <div class="sidebar-telemetry-chip" id="sidebarDataSourceBadge">
+      <div class="telemetry-info">
+        <span class="telemetry-pulse-dot" id="dataSourceDot"></span>
+        <div class="telemetry-text">
+          <div class="telemetry-title" id="dataSourceName">Retail Dataset</div>
+          <div class="telemetry-sub">Active Session • OLIST DB</div>
+        </div>
+      </div>
+      <button id="clearDataBtn" class="telemetry-reset-btn" title="Reset to Demo Data" style="display: none;">
+        <i class="bi bi-arrow-counterclockwise"></i>
+      </button>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="sidebar-user-left">
+        <div class="user-avatar-wrap">
+          <div class="user-avatar">EX</div>
+          <span class="user-status-dot"></span>
+        </div>
+        <div class="user-info">
+          <div class="user-name">Retail Executive</div>
+          <div class="user-role">Strategy & Ops</div>
+        </div>
+      </div>
+      <button class="user-options-btn" title="Executive Preferences" onclick="window.location.href='/advisor'">
+        <i class="bi bi-sliders"></i>
+      </button>
     </div>
   </div>
 </aside>
